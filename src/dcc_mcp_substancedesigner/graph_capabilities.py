@@ -765,7 +765,9 @@ def resolve_context(*, graph_ref: JsonMap | None = None, context: JsonMap | str 
 def _explicit_graph_context(context: JsonMap | str | None) -> JsonMap | None:
     if isinstance(context, str):
         legacy = _legacy_context_contract(context)
-        return _graph_context(_text(legacy.get("graph_kind")) or "function_graph", _map_or_empty(legacy.get("contract")), "caller")
+        return _graph_context(
+            _text(legacy.get("graph_kind")) or "function_graph", _map_or_empty(legacy.get("contract")), "caller"
+        )
     if not isinstance(context, dict):
         return None
     graph_kind = _text(context.get("graph_kind"))

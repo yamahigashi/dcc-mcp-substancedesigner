@@ -785,7 +785,9 @@ def apply_nested_graph_patch_to_graph(
             )
             property_graph_type = string_or_default(operation.get("graph_type"), "SDSBSFunctionGraph")
             prop = find_node_property(node, property_id)
-            property_graph = rebuild_property_graph(cast(PropertyGraphOwner, node), prop, node_id, property_id, property_graph_type)
+            property_graph = rebuild_property_graph(
+                cast(PropertyGraphOwner, node), prop, node_id, property_id, property_graph_type
+            )
             state = {
                 "graph_type": property_graph_type,
                 "nodes": state_maps(operation.get("nodes", []), "nodes"),

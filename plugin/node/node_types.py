@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from typing import TYPE_CHECKING, Protocol, TypeAlias
+from typing import Protocol, TypeAlias
 
 from ..host.host_types import (
     HostConnection,
@@ -14,10 +14,6 @@ from ..host.host_types import (
 )
 from ..json_types import JsonScalar, JsonValue
 from ..library.library_types import LibraryResource
-
-if TYPE_CHECKING:
-
-    pass
 
 PropertyInfo: TypeAlias = dict[str, JsonScalar]
 NodePropertyInfo: TypeAlias = dict[str, JsonValue]
