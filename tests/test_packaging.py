@@ -25,6 +25,43 @@ def _load_packager_main() -> Callable[[list[str] | None], int]:
     return module.main
 
 
+def _load_release_module():
+    """Load the release build script."""
+    script_path = REPO_ROOT / "tools" / "build_release.py"
+    spec = importlib.util.spec_from_file_location("build_release", script_path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
+    """Release script builds Python and plugin artifacts."""
+    module = _load_release_module()
+    dist_dir = tmp_path / "dist"
+    plugin_dir = tmp_path / "dist_plugin"
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **_kwargs) -> None:
+        calls.append(command)
+        if command[1:3] == ["-m", "build"]:
+            dist_dir.mkdir()
+            (dist_dir / "package.whl").write_text("", encoding="utf-8")
+            (dist_dir / "package.tar.gz").write_text("", encoding="utf-8")
+            return
+        plugin_dir.mkdir()
+        (plugin_dir / "plugin.zip").write_text("", encoding="utf-8")
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    assert module.main(["--dist-dir", str(dist_dir), "--plugin-output-dir", str(plugin_dir)]) == 0
+    assert [command[1:3] for command in calls] == [
+        ["-m", "build"],
+        ["packaging/assemble_plugin_package.py", "--output-dir"],
+    ]
+
+
 def test_assemble_plugin_package_contains_plugin_files(tmp_path: Path) -> None:
     """Plugin zip includes every host plugin source file."""
     output_dir = tmp_path / "dist_plugin"

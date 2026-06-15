@@ -48,6 +48,12 @@ Build the Python distributions:
 uv run --extra dev python -m build
 ```
 
+Build all release artifacts for the release workflow or GitHub Releases:
+
+```bash
+uv run --extra dev python tools/build_release.py
+```
+
 The `justfile` exposes the same commands as shorter recipes:
 
 ```bash

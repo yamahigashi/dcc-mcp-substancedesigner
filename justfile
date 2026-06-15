@@ -51,6 +51,9 @@ lint-all: lint lint-plugin lint-format
 build:
     uv run --extra dev python -m build
 
+release:
+    uv run --extra dev python tools/build_release.py
+
 package-plugin:
     uv run --extra dev python packaging/assemble_plugin_package.py
 
