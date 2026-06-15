@@ -17,4 +17,5 @@ venv/
 *.sbsbak
 *.autosave
 *.sbs~
-stubs/
+stubs/*
+!stubs/.gitkeep
