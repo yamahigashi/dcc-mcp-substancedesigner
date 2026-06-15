@@ -36,6 +36,17 @@ def _load_release_module():
     return module
 
 
+def _load_release_notes_module():
+    """Load the release notes extraction script."""
+    script_path = REPO_ROOT / "tools" / "extract_release_notes.py"
+    spec = importlib.util.spec_from_file_location("extract_release_notes", script_path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
     """Release script builds Python and plugin artifacts."""
     module = _load_release_module()
@@ -60,6 +71,18 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
         ["-m", "build"],
         ["packaging/assemble_plugin_package.py", "--output-dir"],
     ]
+
+
+def test_extract_release_notes_uses_matching_changelog_section(tmp_path: Path) -> None:
+    """Release notes use the requested changelog section."""
+    module = _load_release_notes_module()
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "# Changelog\n\n## [0.2.0] - 2026-01-02\n\nnew\n\n## [0.1.1] - 2026-01-01\n\nold\n",
+        encoding="utf-8",
+    )
+
+    assert module.extract_notes(changelog, "0.2.0") == "## [0.2.0] - 2026-01-02\n\nnew\n"
 
 
 def test_assemble_plugin_package_contains_plugin_files(tmp_path: Path) -> None:
