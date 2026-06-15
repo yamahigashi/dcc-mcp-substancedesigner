@@ -9,6 +9,7 @@ from typing import cast
 
 from sd.api.sdproperty import SDPropertyCategory
 
+from ..host.host_types import HostPackage as NodeHostPackage
 from ..json_types import JsonMap, JsonValue
 from ..node.node_queries import (
     get_connection_ref_output,
@@ -17,7 +18,6 @@ from ..node.node_queries import (
     get_property_info,
 )
 from ..node.node_types import GraphPackageSource, HostProperty
-from ..node.node_types import HostPackage as NodeHostPackage
 from ..sd_serialization import serialize_sd_value
 from .graph_types import (
     GraphConnection,
@@ -213,7 +213,7 @@ def annotation_values(node: GraphNode) -> list[JsonValue]:
     """Return lightweight annotation values for graph output nodes."""
     values: list[JsonValue] = []
     for prop in annotation_properties(node):
-        info = get_property_info(prop)
+        info = cast(JsonMap, get_property_info(prop))
         try:
             value = node.getPropertyValue(prop)
             if value is not None:

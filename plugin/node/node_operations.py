@@ -18,7 +18,7 @@ from .node_types import MutableGraph, MutableNode, PositionInput, ResourcePackag
 
 def host_string_value(value: str) -> SDValueString:
     """Create a host string value while hiding non-host fallback typing."""
-    return cast(SDValueString, SDValueString.sNew(value))
+    return SDValueString.sNew(value)
 
 
 def create_node(graph: MutableGraph, definition_id: str, position: PositionInput | None) -> JsonMap:

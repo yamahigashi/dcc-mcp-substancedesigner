@@ -7,13 +7,13 @@ from typing import TypeAlias, cast
 
 from sd.api.sdproperty import SDPropertyCategory
 
-from ..json_types import JsonValue
+from ..json_types import JsonMap, JsonValue
 from ..library.library_nodes import (
     ensure_standard_package_for_resource,
     find_library_resource,
     resource_not_found_message,
 )
-from ..library.library_types import LibraryPackageManager
+from ..library.library_types import LibraryPackageManager, LibraryResource
 from ..parameters.parameter_types import SettableSDValue
 from ..parameters.sd_values import make_sd_value
 from .nested_graph_state import (
@@ -38,6 +38,7 @@ from .nested_graph_types import (
     NodeDefinitionGetter,
     NodeFinder,
     NodePositionGetter,
+    OutputNodeCollection,
     OwnerNode,
     ParameterSetter,
     PropertyGraphOwner,
@@ -613,7 +614,7 @@ def apply_nested_graph_state_to_graph(
         set_node_position(node, spec.get("position"))
         parameter_status = set_node_params(node, params)
         logical_to_node[logical_id] = node
-        node_result = {
+        node_result: JsonMap = {
             "id": logical_id,
             "node_id": node.getIdentifier(),
             "definition": get_node_definition(node),
@@ -676,7 +677,7 @@ def restore_node_property_graphs(
             property_id = required_string(graph_spec.get("property"), "property_graphs[].property is required.")
             prop = find_node_property(node, property_id)
             graph_type = string_or_default(graph_spec.get("graph_type"), "SDSBSFunctionGraph")
-            child_graph = rebuild_property_graph(node, prop, node_id, property_id, graph_type)
+            child_graph = rebuild_property_graph(cast(PropertyGraphOwner, node), prop, node_id, property_id, graph_type)
             child_state = state_mapping(graph_spec.get("state"))
             apply_nested_graph_state_to_graph(
                 child_graph,
@@ -784,7 +785,7 @@ def apply_nested_graph_patch_to_graph(
             )
             property_graph_type = string_or_default(operation.get("graph_type"), "SDSBSFunctionGraph")
             prop = find_node_property(node, property_id)
-            property_graph = rebuild_property_graph(node, prop, node_id, property_id, property_graph_type)
+            property_graph = rebuild_property_graph(cast(PropertyGraphOwner, node), prop, node_id, property_id, property_graph_type)
             state = {
                 "graph_type": property_graph_type,
                 "nodes": state_maps(operation.get("nodes", []), "nodes"),
@@ -1089,7 +1090,7 @@ def nested_graph_type(nested_graph: MutableNestedGraph) -> str:
 def host_creation_from_referenced_resource(node: MutableNestedNode) -> dict[str, JsonValue] | None:
     """Return host_creation metadata when a nested node is backed by a package resource."""
     try:
-        resource = node.getReferencedResource()
+        resource = cast(LibraryResource | None, node.getReferencedResource())
     except Exception:
         return None
     if resource is None:
@@ -1169,9 +1170,10 @@ def output_nodes_from_host_result(value: ReprFallback | None) -> list[MutableNes
     if isinstance(value, (list, tuple)):
         return [cast(MutableNestedNode, item) for item in value if item is not None]
     if hasattr(value, "getSize") and hasattr(value, "getItem"):
+        collection = cast(OutputNodeCollection, value)
         nodes: list[MutableNestedNode] = []
-        for index in range(value.getSize()):
-            item = value.getItem(index)
+        for index in range(collection.getSize()):
+            item = collection.getItem(index)
             if item is not None:
                 nodes.append(cast(MutableNestedNode, item))
         return nodes
@@ -1191,7 +1193,7 @@ def assert_restorable_nested_graph_state(state: dict[str, JsonValue]) -> None:
             assert_restorable_nested_graph_state(state_mapping(graph_spec.get("state")))
 
 
-def default_node_position(_node: MutableNestedNode) -> list[float]:
+def default_node_position(_node: object) -> list[float]:
     """Fallback node position serializer used in tests and non-host callers."""
     return [0.0, 0.0]
 

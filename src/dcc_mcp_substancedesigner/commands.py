@@ -8,7 +8,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 
 from dcc_mcp_substancedesigner.__version__ import __version__
 from dcc_mcp_substancedesigner.authoring_reference import (
@@ -37,7 +37,6 @@ from dcc_mcp_substancedesigner.graph_capabilities import (
     validate_graph_change,
 )
 from dcc_mcp_substancedesigner.graph_change_types import (
-    GraphChangeConnection,
     GraphChangeNode,
     GraphChangeParameterItems,
     GraphChangeParameterValue,
@@ -62,7 +61,7 @@ from dcc_mcp_substancedesigner.input_types import (
     ResolutionInput,
     SkillObjectInput,
 )
-from dcc_mcp_substancedesigner.json_types import JsonValue
+from dcc_mcp_substancedesigner.json_types import JsonMap, JsonValue, cast_json_map
 from dcc_mcp_substancedesigner.nested_graph_state import (
     NestedGraphStateValidationError,
     diff_nested_graph_state,
@@ -167,7 +166,7 @@ class SubstanceDesignerCommands:
                     detail_level="full",
                     include_raw=include_raw,
                 )
-                nodes = graph.get("nodes") if isinstance(graph.get("nodes"), list) else []
+                nodes = _json_list(graph.get("nodes"))
                 node = next(
                     (
                         item
@@ -703,7 +702,7 @@ class SubstanceDesignerCommands:
         """Validate a declarative graph change against the resolved graph context."""
         graph_ref = _optional_dict(graph_ref, "graph_ref")
         context = _optional_context(context)
-        change = normalize_graph_change_parameters(_optional_dict(change, "change"))
+        change = normalize_graph_change_parameters(_optional_dict(change, "change") or {})
         if graph_ref is not None:
             graph_ref = self._graph_ref_with_inferred_owner_definition(normalize_graph_ref(graph_ref))
         raw = validate_graph_change(graph_ref=graph_ref, context=context, change=change)
@@ -723,7 +722,7 @@ class SubstanceDesignerCommands:
         change = normalize_graph_change_parameters(_required_dict(change, "change"))
         graph_ref = self._graph_ref_with_inferred_owner_definition(normalize_graph_ref(graph_ref))
         validation = validate_graph_change(graph_ref=graph_ref, context=context, change=change)
-        operation_plan = validation.get("operation_plan") if isinstance(validation.get("operation_plan"), dict) else {}
+        operation_plan = _json_map(validation.get("operation_plan"))
         if not validation["valid"] or operation_plan.get("apply_ready") is False:
             return _operation(
                 "apply_graph_change",
@@ -790,7 +789,8 @@ class SubstanceDesignerCommands:
         if owner_definition and not _definition_needs_instance_resolution(owner_definition):
             return graph_ref
         resolved = resolve_graph_context(graph_ref=graph_ref, context=None)
-        if resolved.get("confidence") == "high" and resolved.get("contract", {}).get("kind") != "unknown":
+        contract = _json_map(resolved.get("contract"))
+        if resolved.get("confidence") == "high" and contract.get("kind") != "unknown":
             return graph_ref
         owner_node_id = _optional_text(graph_ref.get("owner_node_id"), "graph_ref.owner_node_id")
         if not owner_node_id:
@@ -899,11 +899,11 @@ class SubstanceDesignerCommands:
                     created = self._create_graph_change_node(
                         definition=definition,
                         graph_identifier=graph_identifier,
-                        position=operation.get("position"),
+                        position=cast(OptionalPositionInput, operation.get("position")),
                     )
                     execution_trace.append(_execution_trace(created["operation"]))
                     pending_step = None
-                    created_result = created.get("result") if isinstance(created.get("result"), dict) else {}
+                    created_result = _json_map(created.get("result"))
                     created_node_id = _created_node_id(created_result, fallback=logical_id)
                     node_map[logical_id] = created_node_id
                     created_nodes.append(
@@ -1123,7 +1123,7 @@ class SubstanceDesignerCommands:
                         )
                         move_result = self.move_node(
                             node_id=created_node_id,
-                            position=node.get("position"),
+                            position=cast(PositionInput, node.get("position")),
                             graph_identifier=graph_identifier,
                             include_raw=False,
                         )
@@ -1134,11 +1134,11 @@ class SubstanceDesignerCommands:
                     created = self._create_graph_change_node(
                         definition=definition,
                         graph_identifier=graph_identifier,
-                        position=node.get("position"),
+                        position=cast(OptionalPositionInput, node.get("position")),
                     )
                     execution_trace.append(_execution_trace(created["operation"]))
                     pending_step = None
-                    created_result = created.get("result") if isinstance(created.get("result"), dict) else {}
+                    created_result = _json_map(created.get("result"))
                     created_node_id = _created_node_id(created_result, fallback=logical_id)
                     node_map[logical_id] = created_node_id
                     created_logical_ids.add(logical_id)
@@ -1413,7 +1413,12 @@ class SubstanceDesignerCommands:
                 errors.append({"node_id": snapshot["node_id"], "parameter": snapshot["parameter"], "error": str(exc)})
         for node_id, position in reversed(list(position_snapshots.items())):
             try:
-                self.move_node(node_id=node_id, position=position, graph_identifier=graph_identifier, include_raw=False)
+                self.move_node(
+                    node_id=node_id,
+                    position=cast(PositionInput, position),
+                    graph_identifier=graph_identifier,
+                    include_raw=False,
+                )
                 restored_positions.append({"node_id": node_id, "position": position})
             except Exception as exc:
                 errors.append({"node_id": node_id, "position": position, "error": str(exc)})
@@ -1455,7 +1460,7 @@ class SubstanceDesignerCommands:
         *,
         definition: str,
         graph_identifier: str | None,
-        position: JsonValue,
+        position: OptionalPositionInput,
     ) -> Dict[str, Any]:
         creation = _creation_contract_for_definition(definition)
         if creation.get("method") == "create_instance_node":
@@ -1463,14 +1468,14 @@ class SubstanceDesignerCommands:
             return self.create_instance_node(
                 resource_url=resource_url,
                 graph_identifier=graph_identifier,
-                position=position,
+                position=cast(OptionalPositionInput, position),
                 package_hint=_package_hint_from_creation(creation),
                 include_raw=False,
             )
         return self.create_node(
             definition_id=definition,
             graph_identifier=graph_identifier,
-            position=position,
+            position=cast(OptionalPositionInput, position),
             include_raw=False,
         )
 
@@ -2265,7 +2270,7 @@ def _graph_change_patch(change: Dict[str, Any]) -> Dict[str, Any]:
         definition = _optional_text(node.get("definition"), "change.nodes[].definition")
         definition_info = definitions_by_node.get(node_id)
         host_creation = _patch_host_creation_for_definition(definition)
-        parameters = node.get("parameters") if isinstance(node.get("parameters"), dict) else None
+        parameters = _json_map(node.get("parameters")) if isinstance(node.get("parameters"), dict) else None
         lowered_parameters, parameter_nodes, parameter_connections = _lower_connectable_input_parameters(
             node_id=node_id,
             definition=definition_info,
@@ -2369,13 +2374,13 @@ def _lower_connectable_input_parameters(
 
 
 def _patch_input_port(definition: Dict[str, Any], port_id: str) -> Dict[str, Any] | None:
-    ports = definition.get("ports") if isinstance(definition.get("ports"), dict) else {}
+    ports = _json_map(definition.get("ports"))
     inputs = ports.get("inputs")
     if isinstance(inputs, dict):
         for canonical, port in inputs.items():
             if not isinstance(port, dict):
                 continue
-            aliases = [alias for alias in port.get("aliases", []) if isinstance(alias, str)]
+            aliases = [alias for alias in _json_list(port.get("aliases")) if isinstance(alias, str)]
             if port_id == canonical or port_id == port.get("id") or port_id in aliases:
                 return {"id": str(canonical), **port}
         return None
@@ -2383,7 +2388,7 @@ def _patch_input_port(definition: Dict[str, Any], port_id: str) -> Dict[str, Any
         canonical = _optional_text(port.get("id"), "port.id")
         if not canonical:
             continue
-        aliases = [alias for alias in port.get("aliases", []) if isinstance(alias, str)]
+        aliases = [alias for alias in _json_list(port.get("aliases")) if isinstance(alias, str)]
         if port_id == canonical or port_id in aliases:
             return port
     return None
@@ -2454,7 +2459,7 @@ def _patch_canonical_port(definition: Dict[str, Any] | None, direction: str, por
 
 
 def _patch_port_aliases(definition: Dict[str, Any], direction: str) -> Dict[str, str]:
-    ports = definition.get("ports") if isinstance(definition.get("ports"), dict) else {}
+    ports = _json_map(definition.get("ports"))
     values = ports.get(direction)
     aliases: Dict[str, str] = {}
     if isinstance(values, dict):
@@ -2466,7 +2471,7 @@ def _patch_port_aliases(definition: Dict[str, Any], direction: str) -> Dict[str,
         if not canonical:
             continue
         aliases[canonical] = canonical
-        for alias in port.get("aliases", []) if isinstance(port.get("aliases"), list) else []:
+        for alias in _json_list(port.get("aliases")):
             if isinstance(alias, str) and alias:
                 aliases[alias] = canonical
     return aliases
@@ -2555,7 +2560,7 @@ def _compact_apply_graph_change_result(raw: Dict[str, Any]) -> Dict[str, Any]:
         change = validation.get("change")
     else:
         change = None
-    node_map = raw.get("node_map") if isinstance(raw.get("node_map"), dict) else {}
+    node_map = _json_map(raw.get("node_map"))
     if node_map:
         compact["created"] = {
             str(created["id"]): str(created["node_id"])
@@ -2643,7 +2648,7 @@ def _compact_validation_result(validation: Dict[str, Any]) -> Dict[str, Any]:
     compact["change_summary"] = _change_summary(validation.get("change"))
     next_tools = []
     for item in _dict_items(validation.get("next_tools")):
-        args = item.get("args") if isinstance(item.get("args"), dict) else {}
+        args = _json_map(item.get("args"))
         next_tools.append(
             {
                 **{key: value for key, value in item.items() if key != "args"},
@@ -2859,7 +2864,7 @@ def _resolve_instance_authoring_definition(node: Dict[str, Any]) -> Dict[str, An
         return None
     normalized_resource_url = _resource_url_identity(resource_url)
     for candidate in node_definitions():
-        creation = candidate.get("creation") if isinstance(candidate.get("creation"), dict) else {}
+        creation = _json_map(candidate.get("creation"))
         candidate_url = _optional_text(creation.get("resource_url"), "creation.resource_url")
         if candidate_url and _resource_url_identity(candidate_url) == normalized_resource_url:
             definition_id = _optional_text(candidate.get("definition_id"), "candidate.definition_id")
@@ -2875,7 +2880,7 @@ def _resolve_instance_authoring_definition(node: Dict[str, Any]) -> Dict[str, An
 
 
 def _instance_resource_url(node: Dict[str, Any]) -> str | None:
-    instance = node.get("instance") if isinstance(node.get("instance"), dict) else {}
+    instance = _json_map(node.get("instance"))
     for value in (
         instance.get("resource_url"),
         instance.get("resourceUrl"),
@@ -2971,9 +2976,9 @@ def _enrich_node_with_editable_property_graphs(node: Dict[str, Any], *, graph_id
         existing = existing_refs_by_property.get(property_id)
         exists = bool(existing.get("exists", True)) if isinstance(existing, dict) else False
         graph_context = resolve_graph_context(graph_ref=graph_ref, context=None)
-        contract_payload = dict(graph_context["contract"])
+        contract_payload = dict(_json_map(graph_context.get("contract")))
         if contract_payload.get("kind") == "value_processor":
-            output = dict(contract_payload.get("output") if isinstance(contract_payload.get("output"), dict) else {})
+            output = dict(_json_map(contract_payload.get("output")))
             resolved_type = _value_processor_resolved_output_type(node)
             if resolved_type:
                 output["resolved_type"] = resolved_type
@@ -3179,10 +3184,18 @@ def _compact(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {key: value for key, value in payload.items() if value is not None}
 
 
-def _dict_items(value: JsonValue) -> list[Dict[str, Any]]:
+def _dict_items(value: JsonValue) -> list[JsonMap]:
     if not isinstance(value, list):
         return []
-    return [dict(item) for item in value if isinstance(item, dict)]
+    return [cast_json_map(item) for item in value if isinstance(item, dict)]
+
+
+def _json_map(value: Any) -> JsonMap:
+    return cast_json_map(value) if isinstance(value, dict) else {}
+
+
+def _json_list(value: Any) -> list[Any]:
+    return value if isinstance(value, list) else []
 
 
 def _parameter_items(value: JsonValue) -> list[tuple[str, JsonValue]]:
@@ -3192,7 +3205,7 @@ def _parameter_items(value: JsonValue) -> list[tuple[str, JsonValue]]:
 
 
 def _graph_change_parameter_items(node: GraphChangeNode) -> GraphChangeParameterItems:
-    items = _parameter_items(node.get("parameters"))
+    items = cast(GraphChangeParameterItems, _parameter_items(node.get("parameters")))
     definition = node.get("definition")
     if definition != "sbs::compositing::output":
         return items
@@ -3207,7 +3220,7 @@ def _output_node_parameter_id(parameter_id: str) -> str:
 
 
 def _output_node_parameter_value(
-    parameter_id: str, parameter: GraphChangeParameterValue
+    parameter_id: str, parameter: GraphChangeParameterValue | LoweredGraphChangeParameter
 ) -> GraphChangeParameterValue | LoweredGraphChangeParameter:
     if parameter_id not in {"identifier", "label", "usage", "usages"}:
         return parameter
@@ -3220,9 +3233,7 @@ def _output_node_parameter_value(
     return {"value": parameter, "value_type": "string"}
 
 
-def _graph_change_connection_endpoint(
-    connection: GraphChangeConnection, side: str
-) -> tuple[str, OptionalReferenceInput]:
+def _graph_change_connection_endpoint(connection: Dict[str, Any], side: str) -> tuple[str, OptionalReferenceInput]:
     endpoint = connection.get(side)
     if isinstance(endpoint, dict):
         node_id = _connection_endpoint_node(endpoint, f"change.connections[].{side}.node")
@@ -3397,7 +3408,7 @@ def _enrich_graph_change_nodes_with_definition_ports(value: JsonValue) -> list[D
             enriched.append(node)
             continue
         ports = _definition_ports_by_id(definition)
-        ports_evidence = definition.get("ports_evidence") if isinstance(definition.get("ports_evidence"), dict) else {}
+        ports_evidence = _json_map(definition.get("ports_evidence"))
         enriched.append(
             {
                 **node,
@@ -3485,7 +3496,7 @@ def _reference_input(value: JsonValue) -> OptionalReferenceInput:
 
 
 def _parameter_value_and_type(
-    parameter: JsonValue, *, definition: str | None = None, parameter_id: str | None = None
+    parameter: Any, *, definition: str | None = None, parameter_id: str | None = None
 ) -> tuple[JsonValue, str]:
     if isinstance(parameter, dict) and "value" in parameter:
         value = _required_value(parameter.get("value"), "parameter.value")
@@ -3516,7 +3527,7 @@ def _static_parameter_value_type(definition: str | None, parameter_id: str | Non
                 return str(parameter_types[0])
             if isinstance(parameter_types, str) and parameter_types:
                 return parameter_types
-        ports = node.get("ports") if isinstance(node.get("ports"), dict) else {}
+        ports = _json_map(node.get("ports"))
         for port in _dict_items(ports.get("inputs")):
             if port.get("id") != parameter_id:
                 continue
@@ -3636,7 +3647,7 @@ def _optional_position_bounds(value: OptionalSkillObjectInput) -> Dict[str, floa
     }
 
 
-def _optional_text(value: str | None, name: str) -> Optional[str]:
+def _optional_text(value: JsonValue, name: str) -> Optional[str]:
     if value is None:
         return None
     return _required_text(value, name)
@@ -3745,28 +3756,28 @@ def _positive_number(value: JsonValue, name: str) -> float:
     return number
 
 
-def _optional_dict(value: OptionalControlTargetInput, name: str) -> OptionalControlTargetInput:
+def _optional_dict(value: OptionalControlTargetInput, name: str) -> JsonMap | None:
     if value is None:
         return None
     if not isinstance(value, dict):
         raise SubstanceDesignerValidationError(f"{name} must be an object")
-    return value
+    return cast_json_map(value)
 
 
-def _optional_context(value: OptionalSkillObjectInput) -> OptionalSkillObjectInput:
+def _optional_context(value: OptionalSkillObjectInput) -> JsonMap | None:
     if value is None:
         return None
     if isinstance(value, str):
         return {"kind": _required_text(value, "context")}
     if not isinstance(value, dict):
         raise SubstanceDesignerValidationError("context must be an object or string")
-    return value
+    return cast_json_map(value)
 
 
-def _required_dict(value: ControlTargetInput, name: str) -> ControlTargetInput:
+def _required_dict(value: ControlTargetInput | None, name: str) -> JsonMap:
     if not isinstance(value, dict):
         raise SubstanceDesignerValidationError(f"{name} must be an object")
-    return value
+    return cast_json_map(value)
 
 
 def _list_of_dicts(value: ControlUpdatesInput, name: str) -> list[dict[str, JsonValue]]:

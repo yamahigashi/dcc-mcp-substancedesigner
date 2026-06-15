@@ -206,8 +206,14 @@ def make_sd_value_usage_array(value: ValueInput) -> SDValueArray:
     usage_name, components, color_space = usage_metadata(value)
     usage = SDUsage.sNew(usage_name, components, color_space)
     usage_value = SDValueUsage.sNew(usage)
+    if usage_value is None:
+        raise RuntimeError("Failed to create SDValueUsage.")
     usage_type = usage_value.getType()
+    if usage_type is None:
+        raise RuntimeError("Failed to resolve SDValueUsage type.")
     array_value = SDValueArray.sNew(usage_type, 1)
+    if array_value is None:
+        raise RuntimeError("Failed to create SDValueArray.")
     array_value.setItem(0, usage_value)
     return array_value
 
@@ -215,7 +221,8 @@ def make_sd_value_usage_array(value: ValueInput) -> SDValueArray:
 def usage_metadata(value: ValueInput) -> tuple[str, str, str]:
     """Return usage name, components, and color space from scalar or mapping input."""
     if isinstance(value, Mapping):
-        usage_name = usage_name_from_mapping(value)
+        usage_value = cast(Mapping[str, ScalarValue], value)
+        usage_name = usage_name_from_mapping(usage_value)
         if not usage_name:
             raise ParameterValueError(
                 "Usage object must include name, usage, id, or value.",
@@ -223,8 +230,8 @@ def usage_metadata(value: ValueInput) -> tuple[str, str, str]:
                 received_value_type=value_type_name(value),
             )
         default_components, default_color_space = usage_metadata_defaults(usage_name)
-        components = str(value.get("components") or value.get("component") or default_components)
-        color_space = str(value.get("color_space") or value.get("colorSpace") or default_color_space)
+        components = str(usage_value.get("components") or usage_value.get("component") or default_components)
+        color_space = str(usage_value.get("color_space") or usage_value.get("colorSpace") or default_color_space)
         return usage_name, components, color_space
     usage_name = str(as_scalar(value))
     components, color_space = usage_metadata_defaults(usage_name)

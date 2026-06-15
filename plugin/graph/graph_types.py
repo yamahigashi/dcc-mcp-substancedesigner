@@ -3,10 +3,18 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, TypeAlias
 
-from ..node.node_types import HostConnection, HostNode, HostProperty, ReprFallback
-from ..node.node_types import HostPackage as NodeHostPackage
+from ..host.host_types import (
+    HostConnection,
+    HostGraph,
+    HostPackage,
+    HostPackageManager,
+    HostProperty,
+    HostUiManager,
+    ReprFallback,
+)
+from ..node.node_types import HostNode
 
 if TYPE_CHECKING:
     from sd.api.sdbasetypes import float2
@@ -23,32 +31,7 @@ class GraphDefinition(Protocol):
         ...
 
 
-class GraphResource(Protocol):
-    """Protocol for graph resources managed by packages."""
-
-    def getIdentifier(self) -> str:
-        """Return the graph identifier."""
-        ...
-
-    def getClassName(self) -> str:
-        """Return the graph class name."""
-        ...
-
-    def getNodeDefinitions(self) -> Iterable[GraphDefinition]:
-        """Return available node definitions."""
-        ...
-
-    def setIdentifier(self, identifier: str) -> None:
-        """Set the graph identifier."""
-        ...
-
-    def delete(self) -> None:
-        """Delete the graph resource."""
-        ...
-
-    def getNodes(self) -> Iterable["LayoutNode"]:
-        """Return graph nodes."""
-        ...
+GraphResource: TypeAlias = HostGraph
 
 
 class LayoutNode(Protocol):
@@ -59,52 +42,8 @@ class LayoutNode(Protocol):
         ...
 
 
-class HostPackage(Protocol):
-    """Protocol for host packages."""
-
-    def getFilePath(self) -> str:
-        """Return the package file path."""
-        ...
-
-    def getChildrenResources(self, recursive: bool) -> Iterable[GraphResource]:
-        """Return child resources."""
-        ...
-
-
-class PackageManager(Protocol):
-    """Protocol for host package managers."""
-
-    def newUserPackage(self) -> HostPackage:
-        """Create a new user package."""
-        ...
-
-    def getUserPackages(self) -> Iterable[HostPackage]:
-        """Return user packages."""
-        ...
-
-    def savePackageAs(self, package: HostPackage, file_path: str) -> None:
-        """Save a package to a file path."""
-        ...
-
-    def savePackage(self, package: HostPackage) -> None:
-        """Save a package to its current path."""
-        ...
-
-    def unloadUserPackage(self, package: HostPackage) -> None:
-        """Unload a temporary user package."""
-        ...
-
-
-class UiManager(Protocol):
-    """Protocol for UI managers used by lifecycle helpers."""
-
-    def getCurrentGraph(self) -> GraphResource | None:
-        """Return the current graph."""
-        ...
-
-    def openResourceInEditor(self, graph: GraphResource) -> None:
-        """Open a graph in the host editor."""
-        ...
+PackageManager: TypeAlias = HostPackageManager
+UiManager: TypeAlias = HostUiManager
 
 
 class GraphFactory(Protocol):
@@ -183,7 +122,7 @@ class GraphNode(HostNode, Protocol):
         ...
 
 
-class ScenePackage(NodeHostPackage, Protocol):
+class ScenePackage(HostPackage, Protocol):
     """Protocol for user packages listed in scene info."""
 
     def getChildrenResources(self, recursive: bool) -> Iterable[GraphResource]:

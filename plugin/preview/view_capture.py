@@ -109,10 +109,19 @@ class _Application(Protocol):
         ...
 
 
+class _ApplicationClass(Protocol):
+    """QApplication class subset used for lookup."""
+
+    @staticmethod
+    def instance() -> _Application | None:
+        """Return the active application."""
+        ...
+
+
 class _QtWidgetsModule(Protocol):
     """QtWidgets subset used for widget discovery."""
 
-    QApplication: type
+    QApplication: _ApplicationClass
     QWidget: type
 
 

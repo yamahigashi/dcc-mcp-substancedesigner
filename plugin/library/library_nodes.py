@@ -46,7 +46,7 @@ def child_resources(package: LibraryPackage) -> list[LibraryResource]:
         try:
             children = list(package.getChildrenResources(recursive))
             if children:
-                return children
+                return [cast(LibraryResource, child) for child in children]
         except Exception:
             continue
     return []

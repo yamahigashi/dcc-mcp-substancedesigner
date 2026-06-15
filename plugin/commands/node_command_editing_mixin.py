@@ -9,7 +9,7 @@ from ..json_types import JsonMap, JsonValue
 from ..node.node_operations import delete_node as delete_node_payload
 from ..node.node_operations import duplicate_node as duplicate_node_payload
 from ..node.node_operations import move_node as move_node_payload
-from ..node.node_types import MutableGraph, MutableNode
+from ..node.node_types import MutableGraph
 from .command_protocols import NodeCommandHost
 
 
@@ -22,7 +22,7 @@ class NodeEditingCommandMixin:
         graph = host._resolve_graph(graph_identifier)
         node_id = node_identifier(node_id)
         node = host._find_node(graph, node_id)
-        return delete_node_payload(cast(MutableGraph, graph), cast(MutableNode, node), node_id)
+        return delete_node_payload(cast(MutableGraph, graph), node, node_id)
 
     def move_node(
         self,
@@ -35,7 +35,7 @@ class NodeEditingCommandMixin:
         graph = host._resolve_graph(graph_identifier)
         node_id = node_identifier(node_id)
         node = host._find_node(graph, node_id)
-        return move_node_payload(cast(MutableNode, node), node_id, position)
+        return move_node_payload(node, node_id, position)
 
     def duplicate_node(
         self,
@@ -48,4 +48,4 @@ class NodeEditingCommandMixin:
         graph = host._resolve_graph(graph_identifier)
         node_id = node_identifier(node_id)
         node = host._find_node(graph, node_id)
-        return duplicate_node_payload(cast(MutableGraph, graph), cast(MutableNode, node), node_id, offset)
+        return duplicate_node_payload(cast(MutableGraph, graph), node, node_id, offset)

@@ -22,7 +22,7 @@ from dcc_mcp_substancedesigner.authoring_reference import (
     tool_hint,
 )
 from dcc_mcp_substancedesigner.graph_change_types import OutputUsageParameterValue
-from dcc_mcp_substancedesigner.json_types import JsonMap, JsonValue
+from dcc_mcp_substancedesigner.json_types import JsonMap, JsonValue, cast_json_map
 
 FUNCTION_GRAPH_TYPE = "SDSBSFunctionGraph"
 FX_MAP_GRAPH_TYPE = "SDSBSFxMapGraph"
@@ -71,7 +71,7 @@ def authoring_plan(
         [str(suggestion["workflow_uri"]) for suggestion in workflow_suggestions if suggestion.get("workflow_uri")]
     )
     sdf_plan = graph_context.get("graph_kind") == "substance_graph" and _is_sdf_intent(intent)
-    payload = {
+    payload: JsonMap = {
         "graph_ref": normalized_ref,
         "graph_context": graph_context,
         "intent": intent,
@@ -97,7 +97,7 @@ def authoring_capabilities(
     """Return the graph-kind and contract-specific toolbelt available to an LLM author."""
     normalized_ref = normalize_graph_ref(graph_ref)
     graph_context = resolve_graph_context(graph_ref=normalized_ref, context=context)
-    unsupported_reasons = list(graph_context.get("unsupported_reasons", []))
+    unsupported_reasons = _maps(graph_context.get("unsupported_reasons"))
     allowed_nodes = _allowed_node_definitions(graph_context, intent) if not unsupported_reasons else []
     workflow_suggestions = _workflow_suggestions(graph_context, intent)
     reference_uris = _dedupe_strings(
@@ -106,14 +106,15 @@ def authoring_capabilities(
             *[str(suggestion["workflow_uri"]) for suggestion in workflow_suggestions if suggestion.get("workflow_uri")],
         ]
     )
-    payload = {
+    contract = _map_or_empty(graph_context.get("contract"))
+    payload: JsonMap = {
         "graph_ref": normalized_ref,
         "graph_context": graph_context,
         "intent": intent,
         "definition_filter": _definition_filter(graph_context, intent),
         "allowed_definitions": [str(node["definition_id"]) for node in allowed_nodes if node.get("definition_id")],
         "nodes": [_node_capability(node) for node in allowed_nodes],
-        "builtins": graph_context["contract"].get("builtins", []),
+        "builtins": contract.get("builtins", []),
         "output_contract": _output_contract(graph_context),
         "authoring_surfaces": _authoring_surfaces(normalized_ref, graph_context),
         "contract_supported_changes": _supported_changes(graph_context),
@@ -150,7 +151,7 @@ def validate_graph_change(
         )
     change = normalize_graph_change_parameters(change)
     capabilities = authoring_capabilities(graph_ref=normalized_ref, context=context)
-    graph_context = capabilities["graph_context"]
+    graph_context = _map_or_empty(capabilities.get("graph_context"))
     operation_plan = _operation_plan(normalized_ref, change, graph_context)
     errors: list[JsonMap] = []
     if _explicit_full_replace(change):
@@ -173,7 +174,7 @@ def validate_graph_change(
                 "fx_map_graph GraphChange requires owner_node_id so the referenced FX-Map resource can be edited",
             )
         )
-    errors.extend(capabilities.get("unsupported_reasons", []))
+    errors.extend(_maps(capabilities.get("unsupported_reasons")))
 
     operations, operation_errors = _operation_maps(change.get("operations")) if "operations" in change else ([], [])
     replace_keys = [key for key in ("nodes", "connections", "output") if key in change]
@@ -199,7 +200,9 @@ def validate_graph_change(
             operation_plan=operation_plan,
         )
 
-    allowed = set(capabilities["allowed_definitions"])
+    allowed = set(_string_list(capabilities.get("allowed_definitions")))
+    graph_kind = _text(graph_context.get("graph_kind")) or ""
+    contract_kind = _contract_kind(graph_context)
     node_ids: list[str] = []
     definitions_by_node: dict[str, JsonMap] = {}
     for index, node in enumerate(_maps(change.get("nodes"))):
@@ -222,13 +225,13 @@ def validate_graph_change(
                     f"change.nodes[{index}].definition",
                     "definition '{}' is not allowed in graph kind '{}' contract '{}'".format(
                         definition,
-                        graph_context["graph_kind"],
-                        graph_context["contract"]["kind"],
+                        graph_kind,
+                        contract_kind,
                     ),
                     {
                         "definition": definition,
-                        "graph_kind": graph_context["graph_kind"],
-                        "contract": graph_context["contract"]["kind"],
+                        "graph_kind": graph_kind,
+                        "contract": contract_kind,
                     },
                 )
             )
@@ -236,7 +239,7 @@ def validate_graph_change(
         definition_info = _definition_for_context(definition, graph_context)
         if isinstance(definition_info, dict):
             definitions_by_node[node_id] = definition_info
-            if graph_context["graph_kind"] == "substance_graph" and definition != "sbs::compositing::output":
+            if graph_kind == "substance_graph" and definition != "sbs::compositing::output":
                 errors.extend(
                     _validate_declared_node_parameters(
                         node,
@@ -244,7 +247,7 @@ def validate_graph_change(
                         f"change.nodes[{index}].parameters",
                     )
                 )
-            if graph_context["graph_kind"] == "function_graph":
+            if graph_kind == "function_graph":
                 errors.extend(
                     _validate_instance_node_parameters_can_lower(
                         node,
@@ -259,7 +262,7 @@ def validate_graph_change(
         source, source_port = _connection_endpoint(connection, "from")
         target, target_port = _connection_endpoint(connection, "to")
         source_is_builtin = _connection_has_builtin_endpoint(connection, "from") or _is_builtin_endpoint(source)
-        if graph_context["graph_kind"] == "substance_graph":
+        if graph_kind == "substance_graph":
             if not source:
                 errors.append(
                     _error("missing_connection_source", f"change.connections[{index}].from", "source node is required")
@@ -314,7 +317,7 @@ def validate_graph_change(
             )
 
     output = _output_node_id(change.get("output"))
-    output_contract = capabilities["output_contract"]
+    output_contract = _map_or_empty(capabilities.get("output_contract"))
     if output_contract.get("required") and not output and operation_plan["strategy"] != "patch_property_graph":
         errors.append(
             _error("output_required_by_contract", "change.output", "function contract requires an output node")
@@ -323,7 +326,7 @@ def validate_graph_change(
         output_definition = definitions_by_node[output]
         output_type = _definition_default_output_type(output_definition)
         expected_type = _text(output_contract.get("type"))
-        blocked_reason = _root_blocked_reason(output_definition, graph_context["contract"]["kind"])
+        blocked_reason = _root_blocked_reason(output_definition, contract_kind)
         if blocked_reason:
             error_code = (
                 "output_type_mismatch" if blocked_reason == "output_type_mismatch" else "output_contract_blocked"
@@ -333,12 +336,10 @@ def validate_graph_change(
                 _error(
                     error_code,
                     "change.output",
-                    "output node is blocked by contract '{}' because '{}'".format(
-                        graph_context["contract"]["kind"], blocked_reason
-                    ),
+                    "output node is blocked by contract '{}' because '{}'".format(contract_kind, blocked_reason),
                     {
                         "definition": output_definition.get("definition_id"),
-                        "contract": graph_context["contract"]["kind"],
+                        "contract": contract_kind,
                         "reason": blocked_reason,
                         "suggested_root_definitions": _suggested_root_definitions(capabilities, expected_type),
                     },
@@ -387,9 +388,9 @@ def _validate_graph_change_operations(operations: list[JsonMap], capabilities: J
     """Validate public partial-edit operations."""
     errors: list[JsonMap] = []
     allowed_ops = set(_string_list(capabilities.get("apply_supported_changes")))
-    allowed_definitions = set(
-        capabilities.get("allowed_definitions") if isinstance(capabilities.get("allowed_definitions"), list) else []
-    )
+    allowed_definitions = set(_string_list(capabilities.get("allowed_definitions")))
+    graph_context = _map_or_empty(capabilities.get("graph_context"))
+    graph_kind = _text(graph_context.get("graph_kind")) or ""
     definitions_by_node: dict[str, JsonMap] = {}
     for index, operation in enumerate(operations):
         op = _text(operation.get("op"))
@@ -407,7 +408,7 @@ def _validate_graph_change_operations(operations: list[JsonMap], capabilities: J
             definition = _text(operation.get("definition"))
             if not node_id:
                 errors.append(_error("missing_node_id", "{}.id".format(path), "node id is required"))
-            if capabilities.get("graph_context", {}).get("graph_kind") == "substance_graph" and not definition:
+            if graph_kind == "substance_graph" and not definition:
                 errors.append(_error("missing_definition", "{}.definition".format(path), "node definition is required"))
             if definition:
                 if definition not in allowed_definitions:
@@ -419,10 +420,10 @@ def _validate_graph_change_operations(operations: list[JsonMap], capabilities: J
                         )
                     )
                 else:
-                    definition_info = _definition_for_context(definition, capabilities["graph_context"])
+                    definition_info = _definition_for_context(definition, graph_context)
                     if isinstance(definition_info, dict) and node_id:
                         definitions_by_node[node_id] = definition_info
-                        if capabilities["graph_context"]["graph_kind"] == "function_graph":
+                        if graph_kind == "function_graph":
                             errors.extend(
                                 _validate_instance_node_parameters_can_lower(
                                     operation,
@@ -478,7 +479,7 @@ def _validate_graph_change_operations(operations: list[JsonMap], capabilities: J
         if op == "set_output":
             if not _text(operation.get("node")):
                 errors.append(_error("missing_node_id", "{}.node".format(path), "node is required"))
-            if capabilities["graph_context"]["graph_kind"] == "substance_graph":
+            if graph_kind == "substance_graph":
                 errors.append(
                     _error(
                         "operation_not_supported",
@@ -498,7 +499,7 @@ def _validate_operation_parameters(operation: JsonMap, definition: str | None, p
 
 
 def _validate_instance_node_parameters_can_lower(node: JsonMap, definition: JsonMap, path: str) -> list[JsonMap]:
-    creation = definition.get("creation") if isinstance(definition.get("creation"), dict) else {}
+    creation = _map_or_empty(definition.get("creation"))
     if creation.get("method") != "create_instance_node":
         return []
     parameters = node.get("parameters")
@@ -520,7 +521,7 @@ def _validate_instance_node_parameters_can_lower(node: JsonMap, definition: Json
 
 
 def _input_port(definition: JsonMap, port_id: str) -> JsonMap | None:
-    ports = definition.get("ports") if isinstance(definition.get("ports"), dict) else {}
+    ports = _map_or_empty(definition.get("ports"))
     inputs = ports.get("inputs")
     if isinstance(inputs, dict):
         for canonical, port in inputs.items():
@@ -596,7 +597,8 @@ def _definitions_by_change_node(change: JsonMap) -> dict[str, JsonMap]:
 
 def _state_node(node: JsonMap) -> JsonMap:
     result = dict(node)
-    host_creation = _host_creation_for_definition(_text(node.get("definition")))
+    definition_id = _text(node.get("definition"))
+    host_creation = _host_creation_for_definition(definition_id) if definition_id else None
     if host_creation:
         result["host_creation"] = host_creation
     return result
@@ -763,11 +765,11 @@ def resolve_context(*, graph_ref: JsonMap | None = None, context: JsonMap | str 
 def _explicit_graph_context(context: JsonMap | str | None) -> JsonMap | None:
     if isinstance(context, str):
         legacy = _legacy_context_contract(context)
-        return _graph_context(legacy["graph_kind"], legacy["contract"], "caller")
+        return _graph_context(_text(legacy.get("graph_kind")) or "function_graph", _map_or_empty(legacy.get("contract")), "caller")
     if not isinstance(context, dict):
         return None
     graph_kind = _text(context.get("graph_kind"))
-    contract_value = context.get("contract") if isinstance(context.get("contract"), dict) else {}
+    contract_value = _map_or_empty(context.get("contract"))
     if graph_kind:
         contract = _contract_from_mapping(contract_value)
         if context.get("allowed_context_scopes"):
@@ -776,7 +778,11 @@ def _explicit_graph_context(context: JsonMap | str | None) -> JsonMap | None:
     legacy_kind = _text(context.get("kind"))
     if legacy_kind:
         legacy = _legacy_context_contract(legacy_kind)
-        return _graph_context(legacy["graph_kind"], legacy["contract"], _text(context.get("source")) or "caller")
+        return _graph_context(
+            _text(legacy.get("graph_kind")) or "function_graph",
+            _map_or_empty(legacy.get("contract")),
+            _text(context.get("source")) or "caller",
+        )
     return None
 
 
@@ -818,11 +824,7 @@ def _function_contract_for_property(owner_definition: str, property_id: str) -> 
 
 def _contract_from_mapping(value: JsonMap) -> JsonMap:
     kind = _text(value.get("kind")) or "none"
-    output = (
-        value.get("output")
-        if isinstance(value.get("output"), dict)
-        else {"type": _text(value.get("output_type")) or "unknown"}
-    )
+    output: JsonMap = _map_or_empty(value.get("output")) or {"type": _text(value.get("output_type")) or "unknown"}
     contract = _contract(
         kind,
         output=output,
@@ -875,6 +877,7 @@ def _graph_context(
 
 def _allowed_node_definitions(graph_context: JsonMap, intent: str | None) -> list[JsonMap]:
     graph_kind = str(graph_context["graph_kind"])
+    contract_kind = _contract_kind(graph_context)
     if graph_kind == "fx_map_graph":
         return _fx_map_node_definitions()
     nodes = []
@@ -882,9 +885,9 @@ def _allowed_node_definitions(graph_context: JsonMap, intent: str | None) -> lis
         if _node_allowed_in_graph_context(node, graph_context):
             nodes.append(node)
     sdf_family = _sdf_intent_definition_family(intent)
-    if graph_context["contract"]["kind"] == "sdf_function" and sdf_family:
+    if contract_kind == "sdf_function" and sdf_family:
         return [node for node in nodes if _sdf_node_matches_family(node, sdf_family)]
-    if _is_sdf_intent(intent) or graph_context["contract"]["kind"] == "sdf_function":
+    if _is_sdf_intent(intent) or contract_kind == "sdf_function":
         generic_nodes = [node for node in nodes if _has_context(node, GENERIC_FUNCTION_SCOPE)]
         sdf_nodes = [node for node in nodes if _is_sdf_node(node)]
         return _dedupe_nodes([*generic_nodes, *sdf_nodes])
@@ -901,7 +904,7 @@ def _node_allowed_in_graph_context(node: JsonMap, graph_context: JsonMap) -> boo
         return False
     if node.get("graph_type") and node.get("graph_type") != FUNCTION_GRAPH_TYPE:
         return False
-    contract = graph_context["contract"]
+    contract = _contract_map(graph_context)
     allowed_families = set(_string_list(contract.get("allowed_families")))
     node_families = set(_string_list(node.get("families")))
     if allowed_families and node_families & allowed_families:
@@ -937,7 +940,7 @@ def _definition_context_rank(node: JsonMap, graph_context: JsonMap) -> int:
 def _is_sdf_node(node: JsonMap) -> bool:
     if SDF_FUNCTION_FAMILY in _string_list(node.get("families")):
         return True
-    availability = node.get("availability") if isinstance(node.get("availability"), dict) else {}
+    availability = _map_or_empty(node.get("availability"))
     requires_context = _string_list(availability.get("requires_context"))
     return SDF_VIEWER_SCOPE in requires_context
 
@@ -1147,7 +1150,7 @@ def _port_ids(definition: JsonMap, direction: str) -> set[str]:
 
 def _port_aliases(definition: JsonMap, direction: str) -> dict[str, str]:
     aliases: dict[str, str] = {}
-    ports = definition.get("ports", {}).get(direction, []) if isinstance(definition.get("ports"), dict) else []
+    ports = _map_or_empty(definition.get("ports")).get(direction, [])
     if isinstance(ports, dict):
         for port_id, port in ports.items():
             canonical = str(port_id)
@@ -1189,8 +1192,8 @@ def _output_contract(graph_context: JsonMap) -> JsonMap:
         return {"required": False, "type": "texture"}
     if graph_context["graph_kind"] == "fx_map_graph":
         return {"required": False, "type": "texture"}
-    contract = graph_context["contract"]
-    output = contract.get("output") if isinstance(contract.get("output"), dict) else {"type": "unknown"}
+    contract = _contract_map(graph_context)
+    output = _map_or_empty(contract.get("output")) or {"type": "unknown"}
     return {"required": bool(contract.get("required", True)), "type": _text(output.get("type")) or "unknown"}
 
 
@@ -1204,8 +1207,8 @@ def _supported_changes(graph_context: JsonMap) -> list[str]:
 
 
 def _capability_diagnostics(graph_context: JsonMap) -> list[JsonMap]:
-    diagnostics = []
-    for reason in graph_context.get("unsupported_reasons", []):
+    diagnostics: list[JsonMap] = []
+    for reason in _maps(graph_context.get("unsupported_reasons")):
         diagnostics.append({"severity": "error", **reason})
     return diagnostics
 
@@ -1236,9 +1239,7 @@ def _operation_plan(graph_ref: JsonMap, change: JsonMap, graph_context: JsonMap)
         if full_replace
         else [],
         "graph_kind": graph_ref.get("kind"),
-        "contract": graph_context.get("contract", {}).get("kind")
-        if isinstance(graph_context.get("contract"), dict)
-        else None,
+        "contract": _contract_kind(graph_context) or None,
     }
 
 
@@ -1336,7 +1337,7 @@ def _reference_uris(graph_context: JsonMap) -> list[str]:
         return [*common, f"{AUTHORING_PREFIX}/contracts/compositing-graph-state"]
     if graph_context["graph_kind"] == "fx_map_graph":
         return [*common, FX_MAP_GRAPH_URI]
-    if graph_context["contract"].get("kind") == "sdf_function":
+    if _contract_kind(graph_context) == "sdf_function":
         return [
             *common,
             SDF_FUNCTION_WORKFLOW_URI,
@@ -1351,7 +1352,7 @@ def _reference_uris(graph_context: JsonMap) -> list[str]:
 
 
 def _workflow_profile(graph_context: JsonMap) -> JsonMap | None:
-    contract = graph_context.get("contract") if isinstance(graph_context.get("contract"), dict) else {}
+    contract = _contract_map(graph_context)
     if contract.get("kind") != "sdf_function":
         return None
     return {
@@ -1483,7 +1484,7 @@ def _planning_next_tools(graph_ref: JsonMap, intent: str | None, reference_uris:
 
 def _definition_filter(graph_context: JsonMap, intent: str | None) -> JsonMap | None:
     family = _sdf_intent_definition_family(intent)
-    if graph_context.get("contract", {}).get("kind") != "sdf_function" or not family:
+    if _contract_kind(graph_context) != "sdf_function" or not family:
         return None
     return {
         "contract": "sdf_function",
@@ -1633,12 +1634,12 @@ def _dedupe_next_tools(next_tools: list[JsonMap]) -> list[JsonMap]:
 
 
 def _definition_default_output_type(definition: JsonMap) -> str | None:
-    root = definition.get("root") if isinstance(definition.get("root"), dict) else {}
+    root = _map_or_empty(definition.get("root"))
     root_type = _text(root.get("output_type"))
     if root_type:
         return root_type
     output_id = _text(root.get("default_output")) or "unique_filter_output"
-    ports = definition.get("ports", {}).get("outputs", []) if isinstance(definition.get("ports"), dict) else []
+    ports = _map_or_empty(definition.get("ports")).get("outputs", [])
     if isinstance(ports, dict):
         port = ports.get(output_id)
         if isinstance(port, dict):
@@ -1652,8 +1653,8 @@ def _definition_default_output_type(definition: JsonMap) -> str | None:
 
 
 def _root_blocked_reason(definition: JsonMap, contract_kind: str) -> str | None:
-    root = definition.get("root") if isinstance(definition.get("root"), dict) else {}
-    blocked = root.get("blocked_contracts") if isinstance(root.get("blocked_contracts"), dict) else {}
+    root = _map_or_empty(definition.get("root"))
+    blocked = _map_or_empty(root.get("blocked_contracts"))
     reason = blocked.get(contract_kind)
     return str(reason) if isinstance(reason, str) and reason else None
 
@@ -1661,14 +1662,10 @@ def _root_blocked_reason(definition: JsonMap, contract_kind: str) -> str | None:
 def _suggested_root_definitions(capabilities: JsonMap, expected_type: str | None) -> list[JsonMap]:
     if not expected_type:
         return []
-    suggestions = []
-    graph_context = capabilities.get("graph_context") if isinstance(capabilities.get("graph_context"), dict) else {}
-    contract_kind = ""
-    if isinstance(graph_context.get("contract"), dict):
-        contract_kind = _text(graph_context["contract"].get("kind")) or ""
-    for node in capabilities.get("nodes", []) if isinstance(capabilities.get("nodes"), list) else []:
-        if not isinstance(node, dict):
-            continue
+    suggestions: list[JsonMap] = []
+    graph_context = _map_or_empty(capabilities.get("graph_context"))
+    contract_kind = _contract_kind(graph_context)
+    for node in _maps(capabilities.get("nodes")):
         definition_id = _text(node.get("definition"))
         if not definition_id:
             continue
@@ -1725,7 +1722,7 @@ def normalize_graph_change_parameters(change: JsonMap) -> JsonMap:
     if not isinstance(change, dict) or not _maps(change.get("parameters")):
         return dict(change) if isinstance(change, dict) else {}
     normalized = dict(change)
-    nodes = [dict(node) for node in _maps(change.get("nodes"))]
+    nodes = [cast_json_map(dict(node)) for node in _maps(change.get("nodes"))]
     nodes_by_id: dict[str, JsonMap] = {}
     for node in nodes:
         node_id = _text(node.get("id"))
@@ -1738,12 +1735,12 @@ def normalize_graph_change_parameters(change: JsonMap) -> JsonMap:
             continue
         node = nodes_by_id.get(node_id)
         if node is None:
-            node = {"id": node_id}
+            node: JsonMap = {"id": node_id}
             nodes.append(node)
             nodes_by_id[node_id] = node
         params = node.get("parameters")
         if not isinstance(params, dict):
-            params = {}
+            params: JsonMap = {}
             node["parameters"] = params
         params[parameter_id] = _public_parameter_spec(parameter, index)
     normalized["nodes"] = nodes
@@ -1833,15 +1830,16 @@ def _is_builtin_endpoint(value: str | None) -> bool:
 
 
 def _builtin_ids(graph_context: JsonMap) -> set[str]:
-    builtins = graph_context["contract"].get("builtins")
+    builtins = _contract_map(graph_context).get("builtins")
     if isinstance(builtins, dict):
         return {str(key) for key in builtins.keys()}
     return {str(item.get("id")) for item in _maps(builtins) if item.get("id")}
 
 
 def _context_scopes(node: JsonMap) -> list[JsonMap]:
-    scopes = []
-    for item in node.get("context_scopes", []) if isinstance(node.get("context_scopes"), list) else []:
+    scopes: list[JsonMap] = []
+    context_scopes = node.get("context_scopes")
+    for item in context_scopes if isinstance(context_scopes, list) else []:
         if isinstance(item, dict):
             scopes.append(item)
         elif isinstance(item, str):
@@ -1858,7 +1856,19 @@ def _string_list(value: JsonValue) -> list[str]:
 def _maps(value: JsonValue) -> list[JsonMap]:
     if not isinstance(value, list):
         return []
-    return [dict(item) for item in value if isinstance(item, dict)]
+    return [cast_json_map(item) for item in value if isinstance(item, dict)]
+
+
+def _map_or_empty(value: JsonValue) -> JsonMap:
+    return cast_json_map(value) if isinstance(value, dict) else {}
+
+
+def _contract_map(graph_context: JsonMap) -> JsonMap:
+    return _map_or_empty(graph_context.get("contract"))
+
+
+def _contract_kind(graph_context: JsonMap) -> str:
+    return _text(_contract_map(graph_context).get("kind")) or ""
 
 
 def _operation_maps(value: JsonValue) -> tuple[list[JsonMap], list[JsonMap]]:
@@ -1868,7 +1878,7 @@ def _operation_maps(value: JsonValue) -> tuple[list[JsonMap], list[JsonMap]]:
     errors: list[JsonMap] = []
     for index, item in enumerate(value):
         if isinstance(item, dict):
-            operations.append(dict(item))
+            operations.append(cast_json_map(item))
         else:
             errors.append(_error("invalid_operation", f"change.operations[{index}]", "operation must be an object"))
     return operations, errors

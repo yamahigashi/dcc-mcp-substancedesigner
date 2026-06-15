@@ -6,7 +6,6 @@ from typing import cast
 
 from ..graph.graph_operations import arrange_graph_nodes
 from ..graph.graph_output_size import GraphOutputSizeHost, set_graph_output_size_log2, set_graph_output_size_pixels
-from ..graph.graph_types import GraphResource
 from ..host.host_resources import node_identifier
 from ..input_normalization import string_identifier
 from ..json_types import JsonMap, JsonValue
@@ -104,7 +103,7 @@ class CommandUtilityMixin(CommandHostMixin):
     ) -> JsonMap:
         """Arrange graph nodes with the host layout helper."""
         graph = self._resolve_graph(graph_identifier)
-        return arrange_graph_nodes(cast(GraphResource, graph), start_x, start_y, node_spacing_x, node_spacing_y)
+        return arrange_graph_nodes(graph, start_x, start_y, node_spacing_x, node_spacing_y)
 
     def refresh_plugin(self) -> JsonMap:
         """Reload host plugin implementation modules and swap the bridge handler."""

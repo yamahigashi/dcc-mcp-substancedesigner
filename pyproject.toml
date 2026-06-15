@@ -47,7 +47,6 @@ include = [
     "config",
     "examples",
     "docs",
-    "stubs",
     "README.md",
     "AGENTS.md",
     ".env.example",
@@ -73,6 +72,9 @@ omit = ["tests/*"]
 
 [tool.ty.src]
 include = ["src", "plugin"]
+
+[tool.ty.environment]
+extra-paths = ["stubs"]
 
 [tool.ruff]
 line-length = 120

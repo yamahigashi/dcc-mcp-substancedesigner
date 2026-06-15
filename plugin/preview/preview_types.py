@@ -277,12 +277,32 @@ class QtImage(Protocol):
         """Return the image height in pixels."""
         ...
 
+    def pixelColor(self, x: int, y: int) -> "QtColor":
+        """Return the color at a pixel."""
+        ...
+
     def scaled(self, width: int, height: int, aspect_mode: int, transform_mode: int) -> "QtImage":
         """Return a resized image."""
         ...
 
     def save(self, image_path: str, image_format: str) -> bool:
         """Save the image to disk."""
+        ...
+
+
+class QtColor(Protocol):
+    """Protocol for pixel color values used by preview stats."""
+
+    def red(self) -> int:
+        """Return red channel."""
+        ...
+
+    def green(self) -> int:
+        """Return green channel."""
+        ...
+
+    def blue(self) -> int:
+        """Return blue channel."""
         ...
 
 

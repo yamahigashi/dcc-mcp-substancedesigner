@@ -15,7 +15,7 @@ from .connection_types import ConnectableNode
 
 def set_nested_node_params(node: MutableNestedNode, params: JsonMap) -> JsonMap:
     """Apply parameter values to a nested graph node."""
-    return apply_node_params(cast(ParameterNode, node), params)
+    return cast(JsonMap, apply_node_params(cast(ParameterNode, node), params))
 
 
 def safe_nested_connect(

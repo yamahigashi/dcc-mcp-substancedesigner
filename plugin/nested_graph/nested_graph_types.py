@@ -88,20 +88,50 @@ class NestedNode(Protocol):
 class MutableNestedNode(NestedNode, Protocol):
     """Protocol for nested graph nodes created during apply."""
 
+    def getPropertyFromId(self, property_id: str, category: int) -> NestedProperty | None:
+        """Return a property by identifier and category."""
+        ...
+
     def setPosition(self, position: PositionValue) -> None:
         """Set the node position."""
+        ...
+
+    def newProperty(self, property_id: str, property_type: SDTypeValue, category: int) -> NestedProperty | None:
+        """Create a property by identifier, type, and category."""
+        ...
+
+    def setPropertyValue(self, prop: NestedProperty, value: SettableSDValue) -> None:
+        """Set a property value."""
         ...
 
     def setInputPropertyValueFromId(self, property_id: str, value: SettableSDValue) -> None:
         """Set an input property value by identifier."""
         ...
 
+    def setPropertyAnnotationValueFromId(
+        self, prop: NestedProperty, annotation_id: str, value: SettableSDValue
+    ) -> None:
+        """Set a property annotation value."""
+        ...
+
     def setAnnotationPropertyValueFromId(self, property_id: str, value: SettableSDValue) -> None:
         """Set an annotation property value by identifier."""
         ...
 
-    def getReferencedResource(self) -> LibraryResource | None:
-        """Return the referenced package resource for instance function nodes."""
+    def getPropertyGraph(self, prop: NestedProperty) -> "MutableNestedGraph | None":
+        """Return the nested graph for a property."""
+        ...
+
+    def deletePropertyGraph(self, prop: NestedProperty) -> None:
+        """Delete the nested graph for a property."""
+        ...
+
+    def newPropertyGraph(self, prop: NestedProperty, graph_type: str) -> "MutableNestedGraph | None":
+        """Create a nested graph for a property."""
+        ...
+
+    def getReferencedResource(self) -> LibraryResource | "MutableNestedGraph" | None:
+        """Return the referenced package resource or FX-Map graph."""
         ...
 
 
@@ -205,6 +235,10 @@ class NestedOwnerGraph(Protocol):
 
 class MutableNestedGraph(NestedGraph, Protocol):
     """Protocol for nested graphs that can be rebuilt."""
+
+    def getNodes(self) -> Iterable[MutableNestedNode]:
+        """Return mutable nested graph nodes."""
+        ...
 
     def getNodeDefinitions(self) -> Iterable[NodeDefinition]:
         """Return definitions available in the nested graph."""

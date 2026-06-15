@@ -108,6 +108,10 @@ class HostGraph(Protocol):
         """Return the graph identifier."""
         ...
 
+    def getUrl(self) -> str:
+        """Return the graph URL."""
+        ...
+
     def getClassName(self) -> str:
         """Return the graph class name."""
         ...
@@ -156,6 +160,18 @@ class HostGraph(Protocol):
         """Mark a nested graph node as output."""
         ...
 
+    def setIdentifier(self, identifier: str) -> None:
+        """Set the graph identifier."""
+        ...
+
+    def delete(self) -> None:
+        """Delete the graph resource."""
+        ...
+
+    def compute(self) -> None:
+        """Compute the graph."""
+        ...
+
 
 class HostPackage(Protocol):
     """Protocol for host packages."""
@@ -182,6 +198,26 @@ class HostPackageManager(Protocol):
 
     def getPackages(self) -> Iterable[HostPackage]:
         """Return all packages visible to the host."""
+        ...
+
+    def loadUserPackage(self, file_path: str) -> HostPackage:
+        """Load a user package from disk."""
+        ...
+
+    def newUserPackage(self) -> HostPackage:
+        """Create a new user package."""
+        ...
+
+    def savePackageAs(self, package: HostPackage, file_path: str) -> None:
+        """Save a package to a file path."""
+        ...
+
+    def savePackage(self, package: HostPackage) -> None:
+        """Save a package to its current path."""
+        ...
+
+    def unloadUserPackage(self, package: HostPackage) -> None:
+        """Unload a user package."""
         ...
 
 
@@ -214,6 +250,10 @@ class HostResource(Protocol):
 
     def getUrl(self) -> str:
         """Return the resource URL."""
+        ...
+
+    def getClassName(self) -> str:
+        """Return the resource class name."""
         ...
 
 
@@ -273,6 +313,10 @@ class HostUiManager(Protocol):
 
     def getCurrentGraph(self) -> HostGraph | None:
         """Return the current graph."""
+        ...
+
+    def openResourceInEditor(self, graph: HostGraph) -> None:
+        """Open a graph in the host editor."""
         ...
 
 

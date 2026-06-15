@@ -13,7 +13,6 @@ import sd as _sd
 
 from ..json_types import JsonMap, JsonValue
 from ..library.library_nodes import preload_standard_library_packages
-from ..library.library_types import LibraryPackageManager
 from ..python_execution.execution import execute_python_code
 from ..python_execution.python_execution_types import SDModule
 from .command_catalog import PLUGIN_COMMANDS
@@ -76,6 +75,6 @@ class CommandHandler(
     def _preload_standard_libraries(self) -> list[JsonValue]:
         """Best-effort load standard library packages during bridge startup."""
         try:
-            return preload_standard_library_packages(cast(LibraryPackageManager, self._pkg_mgr()))
+            return preload_standard_library_packages(self._pkg_mgr())
         except Exception as exc:
             return [{"loaded": False, "error": str(exc)}]

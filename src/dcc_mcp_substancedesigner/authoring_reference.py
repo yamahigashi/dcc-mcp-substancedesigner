@@ -1049,8 +1049,9 @@ def _search_score(node: dict[str, Any], terms: list[str]) -> tuple[int, list[str
         .get(str(node.get("slug") or ""), {})
     )
     role_text = " ".join(str(value) for value in role_hint.values() if isinstance(value, str)).lower()
-    workflow_warning = node.get("workflow_warning") if isinstance(node.get("workflow_warning"), dict) else {}
-    workflow_text = " ".join(str(value) for value in workflow_warning.values() if isinstance(value, str)).lower()
+    workflow_warning = node.get("workflow_warning")
+    workflow_warning_values = workflow_warning.values() if isinstance(workflow_warning, dict) else ()
+    workflow_text = " ".join(str(value) for value in workflow_warning_values if isinstance(value, str)).lower()
 
     for term in terms:
         term_score = 0

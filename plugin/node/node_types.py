@@ -5,13 +5,19 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Protocol, TypeAlias
 
+from ..host.host_types import (
+    HostConnection,
+    HostDefinition,
+    HostNode,
+    HostProperty,
+    ReprFallback,
+)
 from ..json_types import JsonScalar, JsonValue
 from ..library.library_types import LibraryResource
 
 if TYPE_CHECKING:
-    from sd.api.sdbasetypes import float2
 
-    from ..parameters.parameter_types import SettableSDValue
+    pass
 
 PropertyInfo: TypeAlias = dict[str, JsonScalar]
 NodePropertyInfo: TypeAlias = dict[str, JsonValue]
@@ -20,117 +26,6 @@ NestedGraphRef: TypeAlias = dict[str, JsonScalar]
 InstanceRef: TypeAlias = dict[str, str]
 HostGetter: TypeAlias = Callable[[], JsonScalar | None]
 PositionInput: TypeAlias = JsonValue
-
-
-class ReprFallback(Protocol):
-    """Protocol for values that support diagnostic representation."""
-
-    def __repr__(self) -> str:
-        """Return a diagnostic representation."""
-        ...
-
-
-class HostDefinition(Protocol):
-    """Protocol for node definitions."""
-
-    def getId(self) -> str:
-        """Return the definition identifier."""
-        ...
-
-
-class HostResource(Protocol):
-    """Protocol for referenced graph resources."""
-
-    def getIdentifier(self) -> str:
-        """Return the resource identifier."""
-        ...
-
-    def getUrl(self) -> str:
-        """Return the resource URL."""
-        ...
-
-    def getClassName(self) -> str:
-        """Return the resource class name when available."""
-        ...
-
-
-class HostPackage(Protocol):
-    """Protocol for host packages."""
-
-    def getFilePath(self) -> str:
-        """Return the package file path."""
-        ...
-
-
-class HostPosition(Protocol):
-    """Protocol for node position values."""
-
-    x: float
-    y: float
-
-
-class HostPropertyType(Protocol):
-    """Protocol for host property type values."""
-
-    def getId(self) -> str:
-        """Return the type identifier."""
-        ...
-
-
-class HostProperty(Protocol):
-    """Protocol for host properties."""
-
-    def getId(self) -> str:
-        """Return the property identifier."""
-        ...
-
-    def getType(self) -> HostPropertyType | None:
-        """Return the property type."""
-        ...
-
-
-class HostGraph(Protocol):
-    """Protocol for graph values used by node helpers."""
-
-    def getClassName(self) -> str:
-        """Return the graph class name."""
-        ...
-
-
-class HostNode(Protocol):
-    """Protocol for node values used by node helpers."""
-
-    def getDefinition(self) -> HostDefinition | None:
-        """Return the node definition."""
-        ...
-
-    def getReferencedResource(self) -> HostResource | None:
-        """Return the referenced graph resource when present."""
-        ...
-
-    def getPackage(self) -> HostPackage | None:
-        """Return the owning package when present."""
-        ...
-
-    def getPosition(self) -> HostPosition:
-        """Return the node position."""
-        ...
-
-    def getProperties(self, category: int) -> Iterable[HostProperty]:
-        """Return properties for a category."""
-        ...
-
-    def getPropertyGraph(self, prop: HostProperty) -> HostGraph | None:
-        """Return a nested graph for a property when present."""
-        ...
-
-
-class HostConnection(Protocol):
-    """Protocol for connection values used by inspection helpers."""
-
-    def __repr__(self) -> str:
-        """Return a diagnostic representation."""
-        ...
 
 
 class DetailConnection(HostConnection, Protocol):
@@ -182,14 +77,6 @@ class MutableNode(HostNode, Protocol):
 
     def getIdentifier(self) -> str:
         """Return the node identifier."""
-        ...
-
-    def setPosition(self, position: float2) -> None:
-        """Set the node position."""
-        ...
-
-    def setAnnotationPropertyValueFromId(self, parameter_id: str, value: SettableSDValue) -> None:
-        """Set an annotation parameter value."""
         ...
 
 

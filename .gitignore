@@ -17,5 +17,4 @@ venv/
 *.sbsbak
 *.autosave
 *.sbs~
-stubs/sd
-stubs/PySide6
+stubs/

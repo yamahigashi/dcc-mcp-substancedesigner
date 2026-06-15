@@ -21,7 +21,6 @@ from ..host.host_runtime import QT_BINDING_USED
 from ..host.host_types import HostGraph
 from ..json_types import JsonMap, JsonValue
 from ..library.library_nodes import load_package
-from ..library.library_types import LibraryPackageManager
 from ..nested_graph.nested_graph_operations import bind_parameter_input_command, find_node_property
 from ..nested_graph.nested_graph_types import GraphResolver as NestedGraphResolver
 from ..nested_graph.nested_graph_types import NodeDefinitionGetter, OwnerNode
@@ -29,7 +28,6 @@ from ..nested_graph.nested_graph_types import NodeFinder as NestedNodeFinder
 from ..node.node_catalog import SYSTEM_PARAMS
 from ..node.node_queries import InspectableGraph, InspectablePackageManager, get_node_def_id, get_node_detail
 from ..node.node_queries import inspect_node as inspect_node_payload
-from ..node.node_types import DetailNode
 from ..parameters.parameters import value_input
 from ..parameters.sd_values import infer_value_type
 from ..preview.preview_outputs import export_node_output_texture, find_node_output_property
@@ -64,7 +62,7 @@ class NodeInspectionCommandMixin:
                     ),
                 },
             ) from exc
-        detail = get_node_detail(node_id, cast(DetailNode, node), SYSTEM_PARAMS, serialize_sd_value)
+        detail = get_node_detail(node_id, node, SYSTEM_PARAMS, serialize_sd_value)
         resolved_graph_identifier = _safe_graph_identifier(graph)
         detail["graph_identifier"] = resolved_graph_identifier
         detail["resolved_graph_identifier"] = resolved_graph_identifier
@@ -86,7 +84,7 @@ class NodeInspectionCommandMixin:
         return inspect_node_payload(
             graph=cast(InspectableGraph, graph),
             package_manager=cast(InspectablePackageManager, host._pkg_mgr()),
-            existing_node=cast(DetailNode, existing_node) if existing_node is not None else None,
+            existing_node=existing_node,
             node_id=resolved_node_id,
             definition_id=definition_id,
             resource_url=resource_url,
@@ -364,7 +362,7 @@ class NodeLibraryCommandMixin:
         if not package_name_or_path:
             raise ValueError("path or package_name is required.")
         host = cast(NodeCommandHost, self)
-        return load_package(cast(LibraryPackageManager, host._pkg_mgr()), package_name_or_path)
+        return load_package(host._pkg_mgr(), package_name_or_path)
 
 
 class NodeLookupErrorWithDetails(ValueError):
