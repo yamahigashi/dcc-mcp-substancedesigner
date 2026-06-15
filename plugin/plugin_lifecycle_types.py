@@ -16,7 +16,7 @@ ExceptionReporter: TypeAlias = Callable[[], None]
 class ServerController(Protocol):
     """Protocol for bridge server instances managed by the plugin lifecycle."""
 
-    def start(self) -> None:
+    def start(self) -> bool:
         """Start the bridge server."""
         ...
 

@@ -70,7 +70,8 @@ def start_plugin_server(
             version=version,
             ports=ports,
         )
-        server.start()
+        if not server.start():
+            return None
         log("Plugin v{} ready! Port: {}".format(version_text, ports))
         return server
     except Exception as exc:

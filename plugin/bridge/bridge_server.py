@@ -145,7 +145,7 @@ class SDMCPServer:
         self._log = log
         self._version = version
 
-    def start(self) -> None:
+    def start(self) -> bool:
         """Start listening on all configured bridge ports."""
         self.running = True
         for port in self.ports:
@@ -161,12 +161,14 @@ class SDMCPServer:
                 self._log("Failed to bind port {}: {}".format(port, e))
 
         if not self.listeners:
+            self.running = False
             self._log("ERROR: No ports could be opened!")
-            return
+            return False
 
         self._thread = threading.Thread(target=self._serve_loop, daemon=True, name="SD-MCP-Serve")
         self._thread.start()
         self._log("v{} running on ports: {}".format(".".join(map(str, self._version)), list(self.listeners.keys())))
+        return True
 
     def stop(self) -> None:
         """Stop all listeners owned by this bridge server."""

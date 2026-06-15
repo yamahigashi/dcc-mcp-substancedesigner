@@ -49,14 +49,16 @@ class FakeFailingHandler:
 class FakeServer:
     """Fake bridge server."""
 
-    def __init__(self) -> None:
+    def __init__(self, start_result: bool = True) -> None:
         """Initialize server state."""
+        self.start_result = start_result
         self.started = False
         self.stopped = False
 
-    def start(self) -> None:
+    def start(self) -> bool:
         """Record server start."""
         self.started = True
+        return self.start_result
 
     def stop(self) -> None:
         """Record server stop."""
@@ -131,6 +133,31 @@ def test_start_plugin_server_reports_start_failure() -> None:
     assert reported == [True]
 
 
+def test_start_plugin_server_does_not_log_ready_when_server_start_returns_false() -> None:
+    """Lifecycle helper treats a false start result as not ready."""
+    module = _load_plugin_lifecycle_module()
+    logs: list[str] = []
+    server = FakeServer(start_result=False)
+
+    result = module.start_plugin_server(
+        lambda **kwargs: server,
+        FakeHandler(),
+        lambda fn, cmd_type, params: fn(cmd_type, params),
+        lambda value: str(value),
+        logs.append,
+        (3, 3, 0),
+        [9881],
+        "C:/PySide",
+        "PySide6",
+        True,
+        lambda: None,
+    )
+
+    assert result is None
+    assert server.started is True
+    assert "Plugin v3.3.0 ready! Port: [9881]" not in logs
+
+
 def test_stop_plugin_server_stops_when_present() -> None:
     """Lifecycle helper stops an existing server."""
     module = _load_plugin_lifecycle_module()
@@ -163,6 +190,24 @@ def test_bridge_server_returns_structured_error_details() -> None:
             "received_value_type": "dict",
         },
     }
+
+
+def test_bridge_server_start_returns_false_when_no_ports_opened() -> None:
+    """Bridge server reports not running when no listener opens."""
+    module = _load_bridge_server_module()
+    logs: list[str] = []
+    server = module.SDMCPServer(
+        handler=FakeHandler(),
+        run_on_main=lambda fn, cmd_type, params: fn(cmd_type, params),
+        json_default=lambda value: str(value),
+        log=logs.append,
+        version=(3, 3, 0),
+        ports=[],
+    )
+
+    assert server.start() is False
+    assert server.running is False
+    assert logs == ["ERROR: No ports could be opened!"]
 
 
 def test_refresh_plugin_runtime_reloads_plugin_modules_and_replaces_handler() -> None:
