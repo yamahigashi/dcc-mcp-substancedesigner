@@ -1,0 +1,102 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dcc-mcp-substancedesigner"
+version = "0.1.1"
+description = "Adobe Substance Designer adapter for the DCC Model Context Protocol ecosystem"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.13"
+keywords = ["substance-designer", "adobe", "mcp", "dcc", "model-context-protocol"]
+dependencies = [
+    "dcc-mcp-core>=0.17.43,<1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.8.0",
+    "ty>=0.0.40",
+    "hatchling",
+    "build",
+]
+
+[project.scripts]
+dcc-mcp-substancedesigner = "dcc_mcp_substancedesigner.cli:main"
+
+[project.entry-points."dcc_mcp.adapters"]
+substancedesigner = "dcc_mcp_substancedesigner:SubstanceDesignerMcpServer"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dcc_mcp_substancedesigner"]
+artifacts = [
+    "src/dcc_mcp_substancedesigner/skills/**",
+    "src/dcc_mcp_substancedesigner/node_definitions/*.json",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/dcc_mcp_substancedesigner",
+    "tests",
+    "tools",
+    "plugin",
+    "packaging",
+    "config",
+    "examples",
+    "docs",
+    "stubs",
+    "README.md",
+    "AGENTS.md",
+    ".env.example",
+    "justfile",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short -m 'not integration'"
+markers = [
+    "integration: tests that require a running Substance Designer instance",
+    "live: alias for tests that require a running Substance Designer instance",
+]
+
+[tool.coverage.run]
+source = ["dcc_mcp_substancedesigner"]
+branch = true
+omit = ["tests/*"]
+
+[tool.ty.src]
+include = ["src", "plugin"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "C4", "D", "ANN"]
+ignore = [
+    "E501",
+    "B008",
+    "D203",
+    "D213",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["dcc_mcp_substancedesigner"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/**/*.py" = ["ANN", "D"]
+"tests/*" = ["S101"]
+"tests/**/*.py" = ["ANN", "D"]
+"tools/**/*.py" = ["ANN", "D"]
+"packaging/**/*.py" = ["ANN", "D"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

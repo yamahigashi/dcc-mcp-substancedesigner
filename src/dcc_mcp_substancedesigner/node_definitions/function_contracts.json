@@ -1,0 +1,438 @@
+{
+    "function_contracts": {
+        "sbs::compositing::pixelprocessor.perpixel": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {
+                "$pos": {
+                    "readable": true,
+                    "type": "float2"
+                }
+            },
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "pixel_processor",
+            "output": {
+                "type": "float4"
+            },
+            "owner_definition_id": "sbs::compositing::pixelprocessor",
+            "property_id": "perpixel"
+        },
+        "sbs::compositing::valueprocessor.function": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {},
+            "evidence": {
+                "notes": "Actual output type is resolved from Value Processor owner node state. Only the default bool state is currently confirmed.",
+                "source": "live_probe",
+                "status": "partial"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "value_processor",
+            "output": {
+                "type": "owner_output_type"
+            },
+            "owner_definition_id": "sbs::compositing::valueprocessor",
+            "property_id": "function",
+            "type_binding": {
+                "owner_definition_id": "sbs::compositing::valueprocessor",
+                "property_id": "function",
+                "source": "owner_node_state"
+            },
+            "type_matrix": {
+                "evidence": {
+                    "missing": [
+                        "reachable non-default value processor output type states"
+                    ],
+                    "source": "live_probe",
+                    "status": "partial"
+                },
+                "states": {
+                    "default": {
+                        "accepted_output_types": [
+                            "bool",
+                            "float"
+                        ],
+                        "candidate_results": {
+                            "sbs::function::const_bool": {
+                                "candidate_output_type": "bool",
+                                "created": true,
+                                "selectable": true
+                            },
+                            "sbs::function::const_float1": {
+                                "candidate_output_type": "float",
+                                "created": true,
+                                "selectable": true
+                            },
+                            "sbs::function::const_string": {
+                                "candidate_output_type": "string",
+                                "created": true,
+                                "selectable": false
+                            },
+                            "sbs::function::get_string": {
+                                "candidate_output_type": "string",
+                                "created": true,
+                                "selectable": false
+                            }
+                        },
+                        "evidence": {
+                            "notes": "Default created Value Processor state.",
+                            "source": "live_probe",
+                            "status": "complete"
+                        },
+                        "function_only": true,
+                        "function_property_type": "bool",
+                        "owner_output_type": "float",
+                        "owner_properties": {
+                            "annotation": {},
+                            "input": {
+                                "$format": {
+                                    "connectable": false,
+                                    "function_only": false,
+                                    "read_only": false,
+                                    "type": "sbs::compositing::format"
+                                },
+                                "$outputsize": {
+                                    "connectable": false,
+                                    "function_only": false,
+                                    "read_only": false,
+                                    "type": "int2"
+                                },
+                                "$pixelratio": {
+                                    "connectable": false,
+                                    "function_only": false,
+                                    "read_only": false,
+                                    "type": "sbs::compositing::pixelratio"
+                                },
+                                "$pixelsize": {
+                                    "connectable": false,
+                                    "function_only": false,
+                                    "read_only": false,
+                                    "type": "float2"
+                                },
+                                "$randomseed": {
+                                    "connectable": false,
+                                    "function_only": false,
+                                    "read_only": false,
+                                    "type": "int"
+                                },
+                                "$tiling": {
+                                    "connectable": false,
+                                    "function_only": false,
+                                    "read_only": false,
+                                    "type": "sbs::compositing::tiling"
+                                },
+                                "function": {
+                                    "connectable": false,
+                                    "function_only": true,
+                                    "read_only": false,
+                                    "type": "bool"
+                                },
+                                "input": {
+                                    "connectable": true,
+                                    "function_only": false,
+                                    "read_only": true,
+                                    "type": "SDTypeTexture"
+                                }
+                            },
+                            "output": {
+                                "unique_filter_output": {
+                                    "connectable": true,
+                                    "function_only": false,
+                                    "read_only": true,
+                                    "type": "float"
+                                }
+                            }
+                        },
+                        "rejected_output_types": [
+                            "string"
+                        ]
+                    }
+                }
+            }
+        },
+        "sbs::library::3d_viewer.custom_output": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {},
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float4"
+            },
+            "owner_definition_id": "sbs::library::3d_viewer",
+            "property_id": "custom_output"
+        },
+        "sbs::library::3d_viewer.sdf_scene": {
+            "allowed_context_scopes": [
+                "generic_function",
+                "3d_viewer"
+            ],
+            "allowed_node_families": [
+                "generic_function",
+                "sdf_function_library"
+            ],
+            "builtins": {},
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "sdf_function",
+            "output": {
+                "type": "float"
+            },
+            "owner_definition_id": "sbs::library::3d_viewer",
+            "property_id": "sdf_scene"
+        },
+        "sbs::library::shape_splatter_mapper_color.custom_function": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {},
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float4"
+            },
+            "owner_definition_id": "sbs::library::shape_splatter_mapper_color",
+            "property_id": "custom_function"
+        },
+        "sbs::library::shape_splatter_mapper_grayscale.custom_function": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {},
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float"
+            },
+            "owner_definition_id": "sbs::library::shape_splatter_mapper_grayscale",
+            "property_id": "custom_function"
+        },
+        "sbs::library::shape_splatter_v2.pattern_custom_function": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {},
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float"
+            },
+            "owner_definition_id": "sbs::library::shape_splatter_v2",
+            "property_id": "pattern_custom_function"
+        },
+        "sbs::library::shape_splatter_v2.pattern_sdf_function": {
+            "allowed_context_scopes": [
+                "generic_function",
+                "3d_viewer"
+            ],
+            "allowed_node_families": [
+                "generic_function",
+                "sdf_function_library"
+            ],
+            "builtins": {
+                "shape.amount": {
+                    "readable": true,
+                    "type": "int"
+                },
+                "shape.id": {
+                    "readable": true,
+                    "type": "int"
+                }
+            },
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "sdf_function",
+            "output": {
+                "type": "float"
+            },
+            "owner_definition_id": "sbs::library::shape_splatter_v2",
+            "property_id": "pattern_sdf_function"
+        },
+        "sbs::library::shape_splatter_v2.position_function": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {
+                "shape.amount": {
+                    "readable": true,
+                    "type": "int"
+                },
+                "shape.id": {
+                    "readable": true,
+                    "type": "int"
+                }
+            },
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float2"
+            },
+            "owner_definition_id": "sbs::library::shape_splatter_v2",
+            "property_id": "position_function"
+        },
+        "sbs::library::vertex_processor.perVertex": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {
+                "path.id": {
+                    "readable": true,
+                    "type": "int"
+                },
+                "vertex.pos": {
+                    "readable": true,
+                    "type": "float2"
+                }
+            },
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float2"
+            },
+            "owner_definition_id": "sbs::library::vertex_processor",
+            "property_id": "perVertex"
+        },
+        "sbs::library::vertex_processor_simple.perVertex": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {},
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float2"
+            },
+            "owner_definition_id": "sbs::library::vertex_processor_simple",
+            "property_id": "perVertex"
+        },
+        "sbs::library::waveform_01_v2.custom_function": {
+            "allowed_context_scopes": [
+                "generic_function"
+            ],
+            "builtins": {
+                "pos": {
+                    "readable": true,
+                    "type": "float"
+                }
+            },
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "host_property_function",
+            "output": {
+                "type": "float"
+            },
+            "owner_definition_id": "sbs::library::waveform_01_v2",
+            "property_id": "custom_function"
+        }
+    },
+    "host_property_contract_candidates": {
+        "unregistered": [
+            {
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "partial"
+                },
+                "id": "sbs::library::3d_viewer.camera_function",
+                "missing": [
+                    "builtins",
+                    "allowed_context_scopes",
+                    "output_contract_evidence"
+                ],
+                "output": {
+                    "type": "float3"
+                },
+                "reason": "Function-like host property found in library node dump but not in the required minimum registry."
+            },
+            {
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "partial"
+                },
+                "id": "sbs::library::mask_to_paths_2.startup_func",
+                "missing": [
+                    "builtins",
+                    "allowed_context_scopes",
+                    "output_contract_evidence"
+                ],
+                "output": {
+                    "type": "float"
+                },
+                "reason": "Function-like host property found in library node dump but builtins/context semantics are not confirmed."
+            },
+            {
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "partial"
+                },
+                "id": "sbs::library::mask_to_paths_2.order_func",
+                "missing": [
+                    "builtins",
+                    "allowed_context_scopes",
+                    "output_contract_evidence"
+                ],
+                "output": {
+                    "type": "float"
+                },
+                "reason": "Function-like host property found in library node dump but builtins/context semantics are not confirmed."
+            }
+        ]
+    },
+    "resource_kind": "function_contract_registry",
+    "schema_version": "2.0"
+}

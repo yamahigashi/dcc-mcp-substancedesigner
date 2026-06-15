@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        run: uv python install 3.13
+      - name: Install dependencies
+        run: uv sync --extra dev --locked
+      - name: Lint
+        run: uv run ruff check .
+      - name: Format check
+        run: uv run ruff format --check .
+      - name: Type check bridge boundary
+        run: uv run ty check src/dcc_mcp_substancedesigner/bridge.py plugin/bridge/bridge_server.py --ignore unresolved-import
+      - name: Test
+        run: uv run pytest tests/ -v --tb=short
+      - name: Build Python package
+        run: uv run python -m build
+      - name: Build plugin package
+        run: uv run python packaging/assemble_plugin_package.py

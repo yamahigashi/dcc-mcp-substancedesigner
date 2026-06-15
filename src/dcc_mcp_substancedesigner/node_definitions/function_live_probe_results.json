@@ -1,0 +1,1836 @@
+{
+    "contract_property_graphs": {
+        "sbs::compositing::pixelprocessor.perpixel": {
+            "candidate_results": {
+                "sbs::function::const_float4": {
+                    "candidate_output_type": "float4",
+                    "created": true,
+                    "selectable": true
+                },
+                "sbs::function::const_string": {
+                    "candidate_output_type": "string",
+                    "created": true,
+                    "selectable": false
+                },
+                "sbs::function::get_string": {
+                    "candidate_output_type": "string",
+                    "created": true,
+                    "selectable": false
+                }
+            },
+            "evidence": {
+                "source": "live_probe",
+                "status": "complete"
+            },
+            "function_only": true,
+            "owner_definition_id": "sbs::compositing::pixelprocessor",
+            "property_id": "perpixel",
+            "property_type": "float4"
+        }
+    },
+    "evidence": {
+        "source": "mcp_execute_python",
+        "status": "partial"
+    },
+    "generic_function_graph": {
+        "graph_kind": "function_graph",
+        "graph_type": "SDSBSFunctionGraph",
+        "nodes": {
+            "sbs::function::abs": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": []
+            },
+            "sbs::function::add": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": []
+            },
+            "sbs::function::and": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::and"
+                ]
+            },
+            "sbs::function::atan2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::atan2"
+                ]
+            },
+            "sbs::function::cartesian": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::cartesian"
+                ]
+            },
+            "sbs::function::ceil": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::cartesian"
+                ]
+            },
+            "sbs::function::const_bool": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_bool"
+                ]
+            },
+            "sbs::function::const_float1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_float1"
+                ]
+            },
+            "sbs::function::const_float2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_float2"
+                ]
+            },
+            "sbs::function::const_float3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_float3"
+                ]
+            },
+            "sbs::function::const_float4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_float4"
+                ]
+            },
+            "sbs::function::const_int1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_int1"
+                ]
+            },
+            "sbs::function::const_int2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_int2"
+                ]
+            },
+            "sbs::function::const_int3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_int3"
+                ]
+            },
+            "sbs::function::const_int4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_int4"
+                ]
+            },
+            "sbs::function::const_string": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "string"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::const_string"
+                ]
+            },
+            "sbs::function::cos": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::const_string"
+                ]
+            },
+            "sbs::function::div": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::const_string"
+                ]
+            },
+            "sbs::function::dot": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::dot"
+                ]
+            },
+            "sbs::function::eq": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::eq"
+                ]
+            },
+            "sbs::function::exp": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::eq"
+                ]
+            },
+            "sbs::function::floor": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::eq"
+                ]
+            },
+            "sbs::function::get_bool": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_bool"
+                ]
+            },
+            "sbs::function::get_float1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_float1"
+                ]
+            },
+            "sbs::function::get_float2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_float2"
+                ]
+            },
+            "sbs::function::get_float3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_float3"
+                ]
+            },
+            "sbs::function::get_float4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_float4"
+                ]
+            },
+            "sbs::function::get_integer1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_integer1"
+                ]
+            },
+            "sbs::function::get_integer2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_integer2"
+                ]
+            },
+            "sbs::function::get_integer3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_integer3"
+                ]
+            },
+            "sbs::function::get_integer4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_integer4"
+                ]
+            },
+            "sbs::function::get_string": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "string"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::get_string"
+                ]
+            },
+            "sbs::function::gt": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::gt"
+                ]
+            },
+            "sbs::function::gteq": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::gteq"
+                ]
+            },
+            "sbs::function::ifelse": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::gteq"
+                ]
+            },
+            "sbs::function::isdefined": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::isdefined"
+                ]
+            },
+            "sbs::function::iswizzle1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::iswizzle1"
+                ]
+            },
+            "sbs::function::iswizzle2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::iswizzle2"
+                ]
+            },
+            "sbs::function::iswizzle3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::iswizzle3"
+                ]
+            },
+            "sbs::function::iswizzle4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::iswizzle4"
+                ]
+            },
+            "sbs::function::ivector2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::ivector2"
+                ]
+            },
+            "sbs::function::ivector3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::ivector3"
+                ]
+            },
+            "sbs::function::ivector4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::ivector4"
+                ]
+            },
+            "sbs::function::lerp": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::ivector4"
+                ]
+            },
+            "sbs::function::log": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::ivector4"
+                ]
+            },
+            "sbs::function::log2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::ivector4"
+                ]
+            },
+            "sbs::function::lr": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::lr"
+                ]
+            },
+            "sbs::function::lreq": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::max": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::min": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::mod": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::mul": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::mulscalar": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::neg": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::lreq"
+                ]
+            },
+            "sbs::function::not": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::not"
+                ]
+            },
+            "sbs::function::noteq": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::noteq"
+                ]
+            },
+            "sbs::function::or": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::or"
+                ]
+            },
+            "sbs::function::pow": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::or"
+                ]
+            },
+            "sbs::function::pow2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::or"
+                ]
+            },
+            "sbs::function::rand": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::rand"
+                ]
+            },
+            "sbs::function::samplecol": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::samplecol"
+                ]
+            },
+            "sbs::function::samplelum": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::samplelum"
+                ]
+            },
+            "sbs::function::sequence": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::samplelum"
+                ]
+            },
+            "sbs::function::set": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::samplelum"
+                ]
+            },
+            "sbs::function::sin": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::samplelum"
+                ]
+            },
+            "sbs::function::sqrt": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::samplelum"
+                ]
+            },
+            "sbs::function::sub": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::samplelum"
+                ]
+            },
+            "sbs::function::swizzle1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::swizzle1"
+                ]
+            },
+            "sbs::function::swizzle2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::swizzle2"
+                ]
+            },
+            "sbs::function::swizzle3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::swizzle3"
+                ]
+            },
+            "sbs::function::swizzle4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::swizzle4"
+                ]
+            },
+            "sbs::function::tan": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::swizzle4"
+                ]
+            },
+            "sbs::function::tofloat": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::tofloat"
+                ]
+            },
+            "sbs::function::tofloat2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::tofloat2"
+                ]
+            },
+            "sbs::function::tofloat3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::tofloat3"
+                ]
+            },
+            "sbs::function::tofloat4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::tofloat4"
+                ]
+            },
+            "sbs::function::toint1": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::toint1"
+                ]
+            },
+            "sbs::function::toint2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::toint2"
+                ]
+            },
+            "sbs::function::toint3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::toint3"
+                ]
+            },
+            "sbs::function::toint4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "int4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::toint4"
+                ]
+            },
+            "sbs::function::vector2": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float2"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::vector2"
+                ]
+            },
+            "sbs::function::vector3": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float3"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::vector3"
+                ]
+            },
+            "sbs::function::vector4": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "float4"
+                    }
+                ],
+                "selectable": true,
+                "selected_output_nodes": [
+                    "sbs::function::vector4"
+                ]
+            },
+            "sbs::function::while": {
+                "created": true,
+                "default_output": "unique_filter_output",
+                "evidence": {
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "outputs": [
+                    {
+                        "connectable": true,
+                        "id": "unique_filter_output",
+                        "read_only": true,
+                        "type": "bool"
+                    }
+                ],
+                "selectable": false,
+                "selected_output_nodes": [
+                    "sbs::function::vector4"
+                ]
+            }
+        }
+    },
+    "resource_kind": "function_live_probe_results",
+    "schema_version": "2.0",
+    "sd_version": "16.0.3",
+    "value_processor": {
+        "evidence": {
+            "missing": [
+                "reachable non-default value processor output type states"
+            ],
+            "source": "live_probe",
+            "status": "partial"
+        },
+        "states": {
+            "default": {
+                "accepted_output_types": [
+                    "bool",
+                    "float"
+                ],
+                "candidate_results": {
+                    "sbs::function::const_bool": {
+                        "candidate_output_type": "bool",
+                        "created": true,
+                        "selectable": true
+                    },
+                    "sbs::function::const_float1": {
+                        "candidate_output_type": "float",
+                        "created": true,
+                        "selectable": true
+                    },
+                    "sbs::function::const_string": {
+                        "candidate_output_type": "string",
+                        "created": true,
+                        "selectable": false
+                    },
+                    "sbs::function::get_string": {
+                        "candidate_output_type": "string",
+                        "created": true,
+                        "selectable": false
+                    }
+                },
+                "evidence": {
+                    "notes": "Default created Value Processor state.",
+                    "source": "live_probe",
+                    "status": "complete"
+                },
+                "function_only": true,
+                "function_property_type": "bool",
+                "owner_output_type": "float",
+                "owner_properties": {
+                    "annotation": {},
+                    "input": {
+                        "$format": {
+                            "connectable": false,
+                            "function_only": false,
+                            "read_only": false,
+                            "type": "sbs::compositing::format"
+                        },
+                        "$outputsize": {
+                            "connectable": false,
+                            "function_only": false,
+                            "read_only": false,
+                            "type": "int2"
+                        },
+                        "$pixelratio": {
+                            "connectable": false,
+                            "function_only": false,
+                            "read_only": false,
+                            "type": "sbs::compositing::pixelratio"
+                        },
+                        "$pixelsize": {
+                            "connectable": false,
+                            "function_only": false,
+                            "read_only": false,
+                            "type": "float2"
+                        },
+                        "$randomseed": {
+                            "connectable": false,
+                            "function_only": false,
+                            "read_only": false,
+                            "type": "int"
+                        },
+                        "$tiling": {
+                            "connectable": false,
+                            "function_only": false,
+                            "read_only": false,
+                            "type": "sbs::compositing::tiling"
+                        },
+                        "function": {
+                            "connectable": false,
+                            "function_only": true,
+                            "read_only": false,
+                            "type": "bool"
+                        },
+                        "input": {
+                            "connectable": true,
+                            "function_only": false,
+                            "read_only": true,
+                            "type": "SDTypeTexture"
+                        }
+                    },
+                    "output": {
+                        "unique_filter_output": {
+                            "connectable": true,
+                            "function_only": false,
+                            "read_only": true,
+                            "type": "float"
+                        }
+                    }
+                },
+                "rejected_output_types": [
+                    "string"
+                ]
+            }
+        },
+        "type_binding": {
+            "owner_definition_id": "sbs::compositing::valueprocessor",
+            "property_id": "function",
+            "source": "owner_node_state"
+        }
+    }
+}

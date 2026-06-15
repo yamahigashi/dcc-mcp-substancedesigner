@@ -1,0 +1,487 @@
+{
+    "fx_map_graph": {
+        "dynamic_function_contract": {
+            "builtins": {
+                "$depth": {
+                    "readable": true,
+                    "type": "int"
+                },
+                "$depthpow2": {
+                    "readable": true,
+                    "type": "int"
+                },
+                "$number": {
+                    "readable": true,
+                    "type": "int"
+                },
+                "$pos": {
+                    "readable": true,
+                    "type": "float2"
+                }
+            },
+            "evidence": {
+                "notes": "Adobe FX-Map docs describe these dynamic function variables; node ids and ports come from SDK module dump. Integer depth variables follow the MCP function contract requirement.",
+                "source": "adobe_docs",
+                "status": "partial"
+            },
+            "graph_kind": "function_graph",
+            "graph_type": "SDSBSFunctionGraph",
+            "kind": "fx_map_dynamic_function"
+        },
+        "enums": {
+            "sbs::fxmap::blendingmode": {
+                "addsub": {
+                    "display_name": "Add sub",
+                    "value": 0
+                },
+                "alphablend": {
+                    "display_name": "Alpha blend",
+                    "value": 2
+                },
+                "max": {
+                    "display_name": "Max",
+                    "value": 1
+                }
+            },
+            "sbs::fxmap::imagefiltering": {
+                "bilinear": {
+                    "display_name": "Bilinear",
+                    "value": 1
+                },
+                "bilinearmipmaps": {
+                    "display_name": "Bilinear + mipmaps",
+                    "value": 0
+                },
+                "nearest": {
+                    "display_name": "Nearest",
+                    "value": 2
+                }
+            },
+            "sbs::fxmap::patterntype": {
+                "bell": {
+                    "display_name": "Bell",
+                    "value": 5
+                },
+                "brick": {
+                    "display_name": "Brick",
+                    "value": 9
+                },
+                "capsule": {
+                    "display_name": "Capsule",
+                    "value": 15
+                },
+                "cone": {
+                    "display_name": "Cone",
+                    "value": 16
+                },
+                "crescent": {
+                    "display_name": "Crescent",
+                    "value": 14
+                },
+                "disc": {
+                    "display_name": "Disc",
+                    "value": 3
+                },
+                "gaussian": {
+                    "display_name": "Gaussian",
+                    "value": 6
+                },
+                "gradation": {
+                    "display_name": "Gradation",
+                    "value": 10
+                },
+                "gradoffset": {
+                    "display_name": "Gradation w. offset",
+                    "value": 17
+                },
+                "halfbell": {
+                    "display_name": "Half bell",
+                    "value": 12
+                },
+                "hemisphere": {
+                    "display_name": "Hemisphere",
+                    "value": 18
+                },
+                "image_entry": {
+                    "display_name": "Input image",
+                    "value": 1
+                },
+                "null": {
+                    "display_name": "No pattern",
+                    "value": 0
+                },
+                "paraboloid": {
+                    "display_name": "Paraboloid",
+                    "value": 4
+                },
+                "pyramid": {
+                    "display_name": "Pyramid",
+                    "value": 8
+                },
+                "ridgebell": {
+                    "display_name": "Ridged bell",
+                    "value": 13
+                },
+                "square": {
+                    "display_name": "Square",
+                    "value": 2
+                },
+                "thorn": {
+                    "display_name": "Thorn",
+                    "value": 7
+                },
+                "waves": {
+                    "display_name": "Waves",
+                    "value": 11
+                }
+            }
+        },
+        "evidence": {
+            "notes": "SDK module dump exposes the complete sbs::fxmap API authoring definition set.",
+            "path": "/mnt/c/Program Files/Adobe/Adobe Substance 3D Designer/resources/python/tests/assets/test_module.txt",
+            "source": "sdk_module_dump",
+            "status": "complete"
+        },
+        "graph_kind": "fx_map_graph",
+        "graph_type": "SDSBSFxMapGraph",
+        "nodes": {
+            "addnode": {
+                "definition_id": "sbs::fxmap::addnode",
+                "description": "Takes the secondary output and duplicates it over the optional background.",
+                "display_name": "Iterate",
+                "graph_kind": "fx_map_graph",
+                "graph_type": "SDSBSFxMapGraph",
+                "parameters": {
+                    "numberadded": {
+                        "connectable": false,
+                        "default": 1,
+                        "description": "",
+                        "display_name": "Iterations",
+                        "type": "int"
+                    },
+                    "randominherited": {
+                        "connectable": false,
+                        "default": true,
+                        "description": "",
+                        "display_name": "Inherit random",
+                        "type": "bool"
+                    },
+                    "randomseed": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Random seed",
+                        "type": "int"
+                    }
+                },
+                "ports": {
+                    "inputs": {
+                        "output0": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 0",
+                            "read_only": true,
+                            "type": "Undefined"
+                        },
+                        "output1": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 1",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    },
+                    "outputs": {
+                        "unique_filter_output": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    }
+                },
+                "ports_evidence": {
+                    "source": "sdk_module_dump",
+                    "status": "complete"
+                }
+            },
+            "markov2": {
+                "definition_id": "sbs::fxmap::markov2",
+                "description": "Switches between primary and secondary outputs.",
+                "display_name": "Switch",
+                "graph_kind": "fx_map_graph",
+                "graph_type": "SDSBSFxMapGraph",
+                "parameters": {
+                    "randominherited": {
+                        "connectable": false,
+                        "default": true,
+                        "description": "",
+                        "display_name": "Inherit random",
+                        "type": "bool"
+                    },
+                    "randomseed": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Random seed",
+                        "type": "int"
+                    },
+                    "switch": {
+                        "connectable": false,
+                        "default": false,
+                        "description": "",
+                        "display_name": "Selector",
+                        "type": "bool"
+                    }
+                },
+                "ports": {
+                    "inputs": {
+                        "output0": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 0",
+                            "read_only": true,
+                            "type": "Undefined"
+                        },
+                        "output1": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 1",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    },
+                    "outputs": {
+                        "unique_filter_output": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    }
+                },
+                "ports_evidence": {
+                    "source": "sdk_module_dump",
+                    "status": "complete"
+                }
+            },
+            "paramset": {
+                "definition_id": "sbs::fxmap::paramset",
+                "description": "Takes input images, positions them, and renders the node pattern or image.",
+                "display_name": "Quadrant",
+                "graph_kind": "fx_map_graph",
+                "graph_type": "SDSBSFxMapGraph",
+                "parameters": {
+                    "blendingmode": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Blending mode",
+                        "type": [
+                            "sbs::fxmap::blendingmode",
+                            "int"
+                        ]
+                    },
+                    "branchoffset": {
+                        "connectable": false,
+                        "default": [
+                            0,
+                            0
+                        ],
+                        "description": "",
+                        "display_name": "Branch offset",
+                        "type": "float2"
+                    },
+                    "frameoffset": {
+                        "connectable": false,
+                        "default": [
+                            0,
+                            0
+                        ],
+                        "description": "",
+                        "display_name": "Pattern offset",
+                        "type": "float2"
+                    },
+                    "imagefiltering": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Input image filtering",
+                        "type": [
+                            "sbs::fxmap::imagefiltering",
+                            "int"
+                        ]
+                    },
+                    "imageindex": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Input image index",
+                        "type": "int"
+                    },
+                    "imagepremul": {
+                        "connectable": false,
+                        "default": false,
+                        "description": "",
+                        "display_name": "Input image alpha",
+                        "type": "bool"
+                    },
+                    "opacity": {
+                        "connectable": false,
+                        "default": [
+                            1,
+                            1,
+                            1,
+                            1
+                        ],
+                        "description": "",
+                        "display_name": "Color / luminosity",
+                        "type": "float4"
+                    },
+                    "patternrotation": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Pattern rotation",
+                        "type": "float"
+                    },
+                    "patternsize": {
+                        "connectable": false,
+                        "default": [
+                            1,
+                            1
+                        ],
+                        "description": "",
+                        "display_name": "Pattern size",
+                        "type": "float2"
+                    },
+                    "patternsuppl": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Pattern variation",
+                        "type": "float"
+                    },
+                    "patterntype": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Pattern",
+                        "type": [
+                            "sbs::fxmap::patterntype",
+                            "int"
+                        ]
+                    },
+                    "randominherited": {
+                        "connectable": false,
+                        "default": true,
+                        "description": "",
+                        "display_name": "Inherit random",
+                        "type": "bool"
+                    },
+                    "randomseed": {
+                        "connectable": false,
+                        "default": 0,
+                        "description": "",
+                        "display_name": "Random seed",
+                        "type": "int"
+                    }
+                },
+                "ports": {
+                    "inputs": {
+                        "output0": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 0",
+                            "read_only": true,
+                            "type": "Undefined"
+                        },
+                        "output1": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 1",
+                            "read_only": true,
+                            "type": "Undefined"
+                        },
+                        "output2": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 2",
+                            "read_only": true,
+                            "type": "Undefined"
+                        },
+                        "output3": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output 3",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    },
+                    "outputs": {
+                        "unique_filter_output": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    }
+                },
+                "ports_evidence": {
+                    "source": "sdk_module_dump",
+                    "status": "complete"
+                }
+            },
+            "passthrough": {
+                "definition_id": "sbs::fxmap::passthrough",
+                "description": "The Dot node passes through its input.",
+                "display_name": "Dot",
+                "graph_kind": "fx_map_graph",
+                "graph_type": "SDSBSFxMapGraph",
+                "parameters": {},
+                "ports": {
+                    "inputs": {
+                        "output": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    },
+                    "outputs": {
+                        "unique_filter_output": {
+                            "connectable": true,
+                            "default": null,
+                            "description": "",
+                            "display_name": "Output",
+                            "read_only": true,
+                            "type": "Undefined"
+                        }
+                    }
+                },
+                "ports_evidence": {
+                    "source": "sdk_module_dump",
+                    "status": "complete"
+                }
+            }
+        }
+    },
+    "resource_kind": "fx_map_graph_definition",
+    "schema_version": "2.0"
+}

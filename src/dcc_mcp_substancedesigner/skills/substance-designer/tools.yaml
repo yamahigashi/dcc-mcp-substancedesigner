@@ -1,0 +1,329 @@
+tools:
+  - name: get_scene
+    description: Return Substance Designer version, plugin version, loaded packages, graph counts, and the current graph.
+    source_file: scripts/get_scene.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        include_raw: {type: boolean, default: false}
+
+  - name: get_graph
+    description: >-
+      Substance Designer MCP graph inventory tool. Inspect graph structure, nodes, connections, outputs, and optional
+      semantic node details before edits.
+    search_aliases: [inspect graph, graph inventory, graph state, graph structure, node connections]
+    source_file: scripts/get_graph.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        graph_ref:
+          type: object
+          description: GraphRef identifying a package graph, node property graph, or FX-Map graph.
+        graph_identifier: {type: string, minLength: 1}
+        owner_node_id:
+          type: [string, integer]
+          minLength: 1
+          description: Owner node id for directly opening a node property graph without writing a full GraphRef.
+        property_id:
+          type: string
+          minLength: 1
+          description: Owner node property id for directly opening a node property graph, for example sdf_scene.
+        graph_type:
+          type: string
+          minLength: 1
+          description: Optional nested graph type; defaults to SDSBSFunctionGraph for node property graphs.
+        node_limit: {type: integer, minimum: 0, default: 500}
+        node_ids:
+          type: array
+          description: Optional host node ids or logical node ids to include; connections are limited to the selected nodes.
+          items: {type: [string, integer], minLength: 1}
+          minItems: 1
+        position_bounds:
+          type: object
+          description: Optional graph-space bounds for filtering nodes by position.
+          required: [min_x, max_x, min_y, max_y]
+          properties:
+            min_x: {type: number}
+            max_x: {type: number}
+            min_y: {type: number}
+            max_y: {type: number}
+        detail_level: {type: string, enum: [structure, semantic, full, debug], default: structure}
+        include_node_details: {type: boolean, default: false}
+        include_parameters: {type: boolean, default: false}
+        include_raw: {type: boolean, default: false}
+
+  - name: get_node
+    description: >-
+      Substance Designer MCP node inspection tool. Return one node's definition, position, ports, annotations,
+      parameter values, and graph connections.
+    search_aliases: [inspect node, node details, node definition, node ports, node parameters]
+    source_file: scripts/get_node.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      required: [node_id]
+      properties:
+        node_id: {type: [string, integer], minLength: 1}
+        graph_ref:
+          type: object
+          description: Optional GraphRef for inspecting a node inside a node-property graph or FX-Map graph.
+        graph_identifier: {type: string, minLength: 1}
+        include_raw: {type: boolean, default: false}
+
+  - name: get_authoring_plan
+    description: >-
+      Substance Designer MCP authoring plan tool. Establish evidence, workflow references, preview targets,
+      and the next bounded authoring unit before concrete graph capabilities or mutations.
+    search_aliases: [authoring plan, workflow plan, visual iteration plan, preview checkpoints, before mutation]
+    source_file: scripts/get_authoring_plan.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        graph_ref:
+          type: object
+          description: GraphRef identifying a package graph, node property graph, or FX-Map graph.
+        context:
+          type: object
+          description: Optional graph_kind plus FunctionContract override; normally inferred from GraphRef and node metadata.
+        intent: {type: string, minLength: 1}
+        include_raw: {type: boolean, default: false}
+
+  - name: get_reference
+    description: >-
+      Substance Designer MCP authoring reference tool. Read substancedesigner://authoring resources returned by
+      workflow tools before validating or applying graph edits.
+    search_aliases: [get reference, read reference, authoring reference, reference uri, substancedesigner authoring]
+    source_file: scripts/get_reference.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        uri: {type: string, minLength: 1}
+        uris:
+          type: array
+          items: {type: string, minLength: 1}
+          minItems: 1
+
+  - name: get_preview
+    description: Substance Designer MCP preview tool. Render or retrieve a graph or node preview image path.
+    search_aliases: [preview image, render preview, node preview, graph preview]
+    source_file: scripts/get_preview.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        node_id: {type: [string, integer], minLength: 1}
+        graph_identifier: {type: string, minLength: 1}
+        node_output_id: {type: string, minLength: 1}
+        channel: {type: string, default: rgba, minLength: 1}
+        resolution: {type: string, enum: [small, medium, large], default: small}
+        timeout_ms: {type: integer, minimum: 1, default: 10000}
+        width: {type: [string, integer], minimum: 1}
+        height: {type: [string, integer], minimum: 1}
+        include_raw: {type: boolean, default: false}
+
+  - name: diagnostic
+    description: Return plugin, bridge, package, public tool-surface, and client diagnostics without exposing the internal command registry.
+    source_file: scripts/diagnostic.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        include_raw: {type: boolean, default: false}
+
+  - name: execute_python
+    description: Execute trusted local Python in the connected Substance Designer process for diagnostics or recovery.
+    source_file: scripts/execute_python.py
+    execution: sync
+    group: public
+    read_only: false
+    destructive: true
+    idempotent: false
+    annotations: {read_only_hint: false, destructive_hint: true, idempotent_hint: false, open_world_hint: true}
+    input_schema:
+      type: object
+      required: [code]
+      properties:
+        code: {type: string, minLength: 1}
+        strict_json: {type: boolean, default: false}
+        include_raw: {type: boolean, default: false}
+
+  - name: get_authoring_capabilities
+    description: >-
+      Substance Designer MCP authoring discovery tool. Return context-specific nodes, builtins, output contracts,
+      supported graph changes, references, and next tools.
+    search_aliases: [authoring capabilities, graph capabilities, supported graph changes, function contract]
+    source_file: scripts/get_authoring_capabilities.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      properties:
+        graph_ref:
+          type: object
+          description: GraphRef identifying a package graph, node property graph, or FX-Map graph.
+        context:
+          type: object
+          description: Optional graph_kind plus FunctionContract override; normally inferred from GraphRef and node metadata.
+        intent: {type: string, minLength: 1}
+        include_raw: {type: boolean, default: false}
+
+  - name: validate_graph_change
+    description: >-
+      Substance Designer MCP graph validation tool. Preflight a declarative graph change without mutating the host,
+      returning apply_graph_change as the next tool when valid.
+    search_aliases: [validate graph change, preflight graph edit, graph change validation, dry run graph change]
+    source_file: scripts/validate_graph_change.py
+    execution: sync
+    group: public
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations: {read_only_hint: true, destructive_hint: false, idempotent_hint: true}
+    input_schema:
+      type: object
+      required: [change]
+      properties:
+        change:
+          type: object
+          description: Declarative GraphChange with logical nodes, connections, parameters, and output.
+        graph_ref:
+          type: object
+          description: Optional GraphRef identifying the graph to validate against.
+        context:
+          type: object
+          description: Optional graph_kind plus FunctionContract override; inferred when graph_ref contains enough context.
+        include_raw: {type: boolean, default: false}
+
+  - name: apply_graph_change
+    description: >-
+      Substance Designer MCP graph mutation tool. Validate and apply a declarative graph change as a rollback-backed
+      patch/merge; omitted graph state is preserved.
+    search_aliases: [apply graph change, graph mutation, graph patch, declarative graph edit]
+    source_file: scripts/apply_graph_change.py
+    execution: sync
+    group: public
+    read_only: false
+    destructive: true
+    idempotent: false
+    annotations: {read_only_hint: false, destructive_hint: true, idempotent_hint: false}
+    input_schema:
+      type: object
+      required: [graph_ref, change]
+      properties:
+        change:
+          type: object
+          description: Declarative GraphChange; validated before mutation. This tool preserves omitted nodes, connections, outputs, and nested graphs.
+        graph_ref:
+          type: object
+          description: GraphRef identifying the graph to mutate.
+        context:
+          type: object
+          description: Optional graph_kind plus FunctionContract override; inferred when graph_ref contains enough context.
+        include_raw: {type: boolean, default: false}
+
+  - name: replace_graph_state
+    description: >-
+      Substance Designer MCP full graph replacement tool. Replace a complete node-property or FX-Map graph state after
+      verifying the current get_graph state_hash.
+    search_aliases: [replace graph state, full graph replacement, state hash graph edit]
+    source_file: scripts/replace_graph_state.py
+    execution: sync
+    group: public
+    read_only: false
+    destructive: true
+    idempotent: false
+    annotations: {read_only_hint: false, destructive_hint: true, idempotent_hint: false}
+    input_schema:
+      type: object
+      required: [graph_ref, state, expected_current_hash]
+      properties:
+        graph_ref:
+          type: object
+          description: GraphRef identifying a node_property_graph or fx_map_graph to replace.
+        state:
+          type: object
+          description: Complete replacement graph state. Do not pass filtered get_graph output.
+        expected_current_hash:
+          type: string
+          minLength: 1
+          description: state_hash returned by get_graph for the current complete graph state.
+        include_raw: {type: boolean, default: false}
+
+  - name: export_output
+    description: Compute a node output and save it to a caller-provided file path in the Substance Designer host process.
+    source_file: scripts/export_output.py
+    execution: sync
+    group: public
+    read_only: false
+    destructive: false
+    idempotent: false
+    annotations: {read_only_hint: false, destructive_hint: false, idempotent_hint: false}
+    input_schema:
+      type: object
+      required: [node_id, file_path]
+      properties:
+        node_id: {type: [string, integer], minLength: 1}
+        file_path: {type: string, minLength: 1}
+        graph_identifier: {type: string, minLength: 1}
+        node_output_id: {type: string, minLength: 1}
+        include_raw: {type: boolean, default: false}
+
+  - name: save_package
+    description: Save the current or selected Substance Designer package, optionally to a new file path.
+    source_file: scripts/save_package.py
+    execution: sync
+    group: public
+    read_only: false
+    destructive: false
+    idempotent: false
+    annotations: {read_only_hint: false, destructive_hint: false, idempotent_hint: false}
+    input_schema:
+      type: object
+      properties:
+        package_index: {type: integer, minimum: 0, default: 0}
+        file_path: {type: string, minLength: 1}
+        package_path: {type: string, minLength: 1}
+        include_raw: {type: boolean, default: false}
