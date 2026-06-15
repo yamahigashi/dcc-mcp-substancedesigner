@@ -18,4 +18,3 @@ def test_mcp_client_config_examples_are_valid_json() -> None:
         assert server["args"][:2] == ["run", "--directory"]
         assert "dcc-mcp-substancedesigner" in server["args"]
         assert server["env"]["DCC_MCP_ADMIN_UI_PREBUILT"] == "1"
-

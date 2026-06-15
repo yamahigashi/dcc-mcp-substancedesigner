@@ -166,7 +166,9 @@ def test_execute_probe_embeds_python_none_for_missing_graph_identifier() -> None
 def test_merge_node_payload_preserves_duplicate_definition_slug_alias() -> None:
     payload = empty_payload(target_total=2, catalogs=("library.json",))
     first = ProbeTarget("library.json", "clamp", "sbs::library::clamp", "pkg:///clamp", None, "create_instance_node")
-    second = ProbeTarget("library.json", "clamp_2", "sbs::library::clamp", "pkg:///clamp_2", None, "create_instance_node")
+    second = ProbeTarget(
+        "library.json", "clamp_2", "sbs::library::clamp", "pkg:///clamp_2", None, "create_instance_node"
+    )
     first_evidence = {
         "sd_version": "16.0.3",
         "definition": "sbs::library::clamp",

@@ -35,8 +35,9 @@ def main() -> int:
 
     if args.check:
         print(
-            "Validated library node live probe results; "
-            "{} parameter enum contract(s) would change.".format(len(changes))
+            "Validated library node live probe results; {} parameter enum contract(s) would change.".format(
+                len(changes)
+            )
         )
         for change in changes:
             print(_change_line(change))

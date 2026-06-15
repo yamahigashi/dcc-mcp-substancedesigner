@@ -230,9 +230,7 @@ def test_public_tool_action_ids_are_derived_from_tools_yaml() -> None:
 
     assert list(public_tool_names()) == public_tools
     assert public_tool_action_ids() == {name: f"substance_designer__{name}" for name in public_tools}
-    source = (REPO_ROOT / "src" / "dcc_mcp_substancedesigner" / "authoring_reference.py").read_text(
-        encoding="utf-8"
-    )
+    source = (REPO_ROOT / "src" / "dcc_mcp_substancedesigner" / "authoring_reference.py").read_text(encoding="utf-8")
     assert "PUBLIC_TOOL_ACTION_IDS" not in source
 
 
@@ -346,11 +344,7 @@ def test_workflow_tools_have_first_page_search_aliases() -> None:
     }:
         aliases = tools[tool_name].get("search_aliases") or []
         assert any(
-            "graph" in alias
-            or "capabilities" in alias
-            or "preview" in alias
-            or "node" in alias
-            or "reference" in alias
+            "graph" in alias or "capabilities" in alias or "preview" in alias or "node" in alias or "reference" in alias
             for alias in aliases
         ), tool_name
 

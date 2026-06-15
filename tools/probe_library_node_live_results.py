@@ -17,13 +17,13 @@ if str(SRC_ROOT) not in sys.path:
 if str(TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLS_ROOT))
 
+from probe_node_live_result import execute_probe  # noqa: E402
+
 from dcc_mcp_substancedesigner.bridge import (  # noqa: E402
     DEFAULT_SD_BRIDGE_PORT,
     SubstanceDesignerBridgeClient,
     SubstanceDesignerBridgeError,
 )
-from probe_node_live_result import execute_probe  # noqa: E402
-
 
 DEFAULT_NODE_DEFINITION_DIR = REPO_ROOT / "src" / "dcc_mcp_substancedesigner" / "node_definitions"
 DEFAULT_CATALOGS = ("library.json",)
@@ -219,8 +219,7 @@ def select_targets(
     selected = [
         target
         for target in targets
-        if (not definition_ids or target.definition_id in definition_ids)
-        and (not slugs or target.slug in slugs)
+        if (not definition_ids or target.definition_id in definition_ids) and (not slugs or target.slug in slugs)
     ]
     return selected[:limit] if limit is not None else selected
 
@@ -500,7 +499,9 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def write_payload(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(public_payload(payload), ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(public_payload(payload), ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":

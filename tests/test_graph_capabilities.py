@@ -248,7 +248,10 @@ def test_package_graph_sdf_intent_returns_workflow_suggestion_before_node_choice
     assert any("3d_texture_sdf" in item for item in capabilities["workflow_suggestions"][0]["avoid"])
     assert SDF_FUNCTION_WORKFLOW_URI in capabilities["reference_uris"]
     assert "apply_tool" not in capabilities
-    assert all(tool["public_name"] not in {"validate_graph_change", "apply_graph_change"} for tool in capabilities["next_tools"])
+    assert all(
+        tool["public_name"] not in {"validate_graph_change", "apply_graph_change"}
+        for tool in capabilities["next_tools"]
+    )
     assert any(tool["public_name"] == "get_authoring_plan" for tool in capabilities["next_tools"])
 
 
@@ -273,7 +276,9 @@ def test_authoring_plan_for_package_sdf_intent_blocks_mutation_until_visual_unit
         "material_composite",
     ]
     assert all(unit["preview_targets"] for unit in plan["visual_units"])
-    assert all(tool["public_name"] not in {"validate_graph_change", "apply_graph_change"} for tool in plan["next_tools"])
+    assert all(
+        tool["public_name"] not in {"validate_graph_change", "apply_graph_change"} for tool in plan["next_tools"]
+    )
 
 
 def test_authoring_capabilities_infers_owner_definition_from_owner_node() -> None:
@@ -1948,9 +1953,7 @@ def test_apply_graph_change_restores_existing_parameter_and_position_on_later_fa
             "value_type": "ColorRGBA",
         }
     ]
-    assert result["result"]["rollback"]["restored_positions"] == [
-        {"node_id": "1573185644", "position": [10, 20]}
-    ]
+    assert result["result"]["rollback"]["restored_positions"] == [{"node_id": "1573185644", "position": [10, 20]}]
 
 
 def test_apply_graph_change_rolls_back_package_graph_nodes_on_apply_failure() -> None:

@@ -2022,18 +2022,14 @@ def test_diagnostic_hides_internal_bridge_command_registry_by_default() -> None:
     assert result["result"]["public_tool_surface"]["complete"] is True
     assert result["result"]["public_tool_surface"]["count"] == len(action_ids)
     assert len(result["result"]["public_tool_surface"]["tools"]) == len(action_ids)
-    assert [
-        item["public_name"] for item in result["result"]["public_tool_surface"]["tools"]
-    ] == list(action_ids)
+    assert [item["public_name"] for item in result["result"]["public_tool_surface"]["tools"]] == list(action_ids)
     assert {
         item["public_name"]: item["tool"] for item in result["result"]["public_tool_surface"]["tools"]
     } == action_ids
-    assert {
-        item["public_name"]: item["exposed_name"] for item in result["result"]["public_tool_surface"]["tools"]
-    } == {name: name for name in action_ids}
-    assert {
-        item["public_name"] for item in result["result"]["public_tool_surface"]["tools"]
-    } >= {
+    assert {item["public_name"]: item["exposed_name"] for item in result["result"]["public_tool_surface"]["tools"]} == {
+        name: name for name in action_ids
+    }
+    assert {item["public_name"] for item in result["result"]["public_tool_surface"]["tools"]} >= {
         "get_graph",
         "get_authoring_plan",
         "get_authoring_capabilities",
@@ -2041,9 +2037,7 @@ def test_diagnostic_hides_internal_bridge_command_registry_by_default() -> None:
         "apply_graph_change",
         "get_preview",
     }
-    assert {
-        item["exposed_name"] for item in result["result"]["public_tool_surface"]["tools"]
-    } >= {
+    assert {item["exposed_name"] for item in result["result"]["public_tool_surface"]["tools"]} >= {
         "get_graph",
         "get_authoring_plan",
         "get_authoring_capabilities",

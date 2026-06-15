@@ -141,7 +141,8 @@ def normalize_creation_metadata(raw: dict[str, Any]) -> dict[str, Any]:
     candidates = raw.get("standard_package_candidates")
     if isinstance(candidates, list):
         creation["standard_package_candidates"] = [
-            normalize_package_metadata(candidate) if isinstance(candidate, dict) else candidate for candidate in candidates
+            normalize_package_metadata(candidate) if isinstance(candidate, dict) else candidate
+            for candidate in candidates
         ]
     return creation
 
@@ -181,7 +182,9 @@ def merge_library_live_probe(catalog: dict[str, Any], evidence_path: Path) -> No
             parameter["enum"] = normalize_enum_metadata(enum, parameter_evidence, sd_version=sd_version)
 
 
-def normalize_enum_metadata(enum: dict[str, Any], parameter_evidence: dict[str, Any], *, sd_version: str) -> dict[str, Any]:
+def normalize_enum_metadata(
+    enum: dict[str, Any], parameter_evidence: dict[str, Any], *, sd_version: str
+) -> dict[str, Any]:
     payload = dict(enum)
     payload["options"] = [dict(option) for option in enum["options"]]
     if "default_value" in parameter_evidence:

@@ -156,6 +156,8 @@ def public_tool_action_id(public_name: str) -> str:
 def public_tool_action_ids() -> dict[str, str]:
     """Return public tool action ids derived from tools.yaml."""
     return {name: public_tool_action_id(name) for name in public_tool_names()}
+
+
 AUTHORING_CONTRACTS: dict[str, dict[str, Any]] = {
     "reference-first-policy": {
         "resource_kind": "authoring_contract",

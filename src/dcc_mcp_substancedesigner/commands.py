@@ -1326,7 +1326,9 @@ class SubstanceDesignerCommands:
                     continue
                 if "value" not in item and "current_value" not in item:
                     raise SubstanceDesignerValidationError(
-                        "cannot rollback parameter '{}.{}': current value is not available".format(node_id, parameter_id)
+                        "cannot rollback parameter '{}.{}': current value is not available".format(
+                            node_id, parameter_id
+                        )
                     )
                 value = item.get("value") if "value" in item else item.get("current_value")
                 value_type = item.get("value_type") or item.get("type")
@@ -1355,7 +1357,9 @@ class SubstanceDesignerCommands:
         detail = self.get_node_detail(node_id=node_id, graph_identifier=graph_identifier, include_raw=False)
         position = detail.get("position")
         if not isinstance(position, list) or len(position) < 2:
-            raise SubstanceDesignerValidationError("cannot rollback node '{}': current position is not available".format(node_id))
+            raise SubstanceDesignerValidationError(
+                "cannot rollback node '{}': current position is not available".format(node_id)
+            )
         position_snapshots[node_id] = position
 
     def _rollback_package_graph_change(
@@ -1373,7 +1377,9 @@ class SubstanceDesignerCommands:
         errors = []
         for (node_id, input_id), previous_connections in reversed(list(rewired_inputs.items())):
             try:
-                self.disconnect_nodes(node_id=node_id, input_id=input_id, graph_identifier=graph_identifier, include_raw=False)
+                self.disconnect_nodes(
+                    node_id=node_id, input_id=input_id, graph_identifier=graph_identifier, include_raw=False
+                )
                 for previous in previous_connections:
                     self.connect_nodes(
                         from_node_id=previous["from_node"],
@@ -1384,7 +1390,11 @@ class SubstanceDesignerCommands:
                         include_raw=False,
                     )
                 restored.append(
-                    {"node_id": node_id, "input": input_id, "connections": [dict(item) for item in previous_connections]}
+                    {
+                        "node_id": node_id,
+                        "input": input_id,
+                        "connections": [dict(item) for item in previous_connections],
+                    }
                 )
             except Exception as exc:
                 errors.append({"node_id": node_id, "input": input_id, "error": str(exc)})
@@ -2552,7 +2562,9 @@ def _compact_apply_graph_change_result(raw: Dict[str, Any]) -> Dict[str, Any]:
             for created in _dict_items(raw.get("created_nodes"))
             if created.get("id") and created.get("node_id")
         }
-        compact["created_nodes"] = [_compact_created_node_summary(created) for created in _dict_items(raw.get("created_nodes"))]
+        compact["created_nodes"] = [
+            _compact_created_node_summary(created) for created in _dict_items(raw.get("created_nodes"))
+        ]
     if isinstance(change, dict):
         compact["connections"] = _compact_connection_summaries(change, node_map)
         compact["updated_outputs"] = _updated_outputs_from_change(change)
@@ -2692,8 +2704,7 @@ def _diagnostic_public_payload(raw: Dict[str, Any]) -> Dict[str, Any]:
         "complete": True,
         "count": len(action_ids),
         "tools": [
-            {"public_name": name, "exposed_name": name, "tool": action_id}
-            for name, action_id in action_ids.items()
+            {"public_name": name, "exposed_name": name, "tool": action_id} for name, action_id in action_ids.items()
         ],
         "orientation_tools": [
             {
