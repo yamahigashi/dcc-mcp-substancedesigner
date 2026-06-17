@@ -81,16 +81,30 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
     assert bundle_path.is_file()
     with zipfile.ZipFile(bundle_path) as archive:
         names = set(archive.namelist())
-    assert "README.md" in names
-    assert "INSTALL.md" in names
+    assert "README.txt" in names
+    assert "INSTALL.txt" in names
+    assert "install.bat" in names
     assert "install.ps1" in names
     assert "package.whl" in names
     assert "plugin/dcc-mcp-substancedesigner/__init__.py" in names
     with zipfile.ZipFile(bundle_path) as archive:
+        readme = archive.read("README.txt").decode("utf-8")
+        install_bat = archive.read("install.bat").decode("utf-8")
         install_script = archive.read("install.ps1").decode("utf-8")
+    assert "Double-click install.bat" in readme
+    assert "powershell.exe" in install_bat
     assert "winget install astral-sh.uv" in install_script
     assert "uv tool install --force $Wheel.FullName" in install_script
     assert "Remove-Item $Target -Recurse -Force" in install_script
+
+
+def test_github_release_uploads_only_user_bundle() -> None:
+    """GitHub Releases expose the user bundle, not intermediate package artifacts."""
+    workflow = (REPO_ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
+
+    assert "dist_user/*" in workflow
+    assert "dist/*" not in workflow
+    assert "dist_plugin/*" not in workflow
 
 
 def test_extract_release_notes_uses_matching_changelog_section(tmp_path: Path) -> None:

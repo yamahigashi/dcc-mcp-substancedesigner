@@ -41,6 +41,44 @@ if ($SubstanceDesignerPluginDir) {
 Write-Host "Installed dcc-mcp-substancedesigner. Run: dcc-mcp-substancedesigner --check-bridge"
 """
 
+INSTALL_BAT = r"""@echo off
+setlocal
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0install.ps1" %*
+if errorlevel 1 (
+  echo.
+  echo Installation failed. See the message above.
+  pause
+  exit /b 1
+)
+echo.
+echo Installation finished.
+pause
+"""
+
+README_TXT = """dcc-mcp-substancedesigner
+
+Double-click install.bat to install the Python command.
+
+Requirements:
+- Windows
+- Adobe Substance 3D Designer 16.0 or newer
+- uv
+
+If uv is not installed, run:
+winget install astral-sh.uv
+
+To install the Substance Designer plugin automatically, run install.bat from
+Command Prompt and pass your Substance Designer plugin folder:
+
+install.bat "C:\\path\\to\\Substance Designer plugins"
+
+After installing, start Substance Designer, load the plugin, then run:
+dcc-mcp-substancedesigner --check-bridge
+
+MCP clients should connect to:
+http://127.0.0.1:9765/mcp
+"""
+
 
 def _project_version(repo_root: Path) -> str:
     with (repo_root / "pyproject.toml").open("rb") as handle:
@@ -60,8 +98,9 @@ def _write_user_bundle(repo_root: Path, dist_dir: Path, output_dir: Path) -> Pat
 
     plugin_dir = repo_root / "plugin"
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.write(repo_root / "README.md", "README.md")
-        archive.write(repo_root / "docs" / "install.md", "INSTALL.md")
+        archive.writestr("README.txt", README_TXT)
+        archive.write(repo_root / "docs" / "install.md", "INSTALL.txt")
+        archive.writestr("install.bat", INSTALL_BAT)
         archive.writestr("install.ps1", INSTALL_SCRIPT)
         archive.write(wheel, wheel.name)
         for path in sorted(plugin_dir.rglob("*")):
@@ -116,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
     if not artifacts:
         raise SystemExit("No release artifacts were produced.")
 
-    print("Release artifacts:")
+    print("Built artifacts:")
     for artifact in artifacts:
         try:
             display_path = artifact.relative_to(repo_root)

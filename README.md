@@ -42,9 +42,10 @@ dcc-mcp-substancedesigner-0.1.1-windows.zip
 ```
 
 The bundle assumes Windows, Substance Designer 16.0+, and `uv`. It contains the
-Python wheel, the Substance Designer plugin folder, `install.ps1`, and local
-installation notes. Wheel and sdist artifacts may still be published for
-developer and packaging workflows.
+Python wheel, the Substance Designer plugin folder, `install.bat`, `README.txt`,
+and local installation notes. Wheel, sdist, and standalone plugin ZIP artifacts
+are built as internal packaging inputs, but the GitHub Release should expose
+only the Windows bundle.
 
 For user installation steps, see [`docs/install.md`](docs/install.md). For
 source checkout workflows, see [`docs/development.md`](docs/development.md).

@@ -27,13 +27,13 @@ Download the release assets from GitHub Releases:
 
 - `dcc-mcp-substancedesigner-0.1.1-windows.zip`
 
-The wheel and source distribution may also be attached to the release for
-development and packaging workflows. Normal users should use the Windows ZIP.
+Wheel, source distribution, and standalone plugin ZIP files are packaging
+inputs. Normal users should use the Windows ZIP.
 
 Extract the ZIP, then install the Python command:
 
 ```powershell
-.\install.ps1
+.\install.bat
 ```
 
 ## Install the Substance Designer Plugin
@@ -44,7 +44,7 @@ folder into a Substance Designer plugin directory.
 You can also pass the plugin directory to the installer:
 
 ```powershell
-.\install.ps1 "C:\path\to\Substance Designer plugins"
+.\install.bat "C:\path\to\Substance Designer plugins"
 ```
 
 After extraction, the plugin directory should contain:
