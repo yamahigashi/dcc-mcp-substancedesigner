@@ -23,7 +23,5 @@ jobs:
         run: uv run ty check src/dcc_mcp_substancedesigner/bridge.py plugin/bridge/bridge_server.py --ignore unresolved-import
       - name: Test
         run: uv run pytest tests/ -v --tb=short
-      - name: Build Python package
-        run: uv run python -m build
-      - name: Build plugin package
-        run: uv run python packaging/assemble_plugin_package.py
+      - name: Build release artifacts
+        run: uv run python tools/build_release.py

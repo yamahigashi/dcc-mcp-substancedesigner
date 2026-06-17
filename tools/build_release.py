@@ -6,23 +6,89 @@ import argparse
 import shutil
 import subprocess
 import sys
+import tomllib
+import zipfile
 from pathlib import Path
+
+INSTALL_SCRIPT = r"""param(
+    [string]$SubstanceDesignerPluginDir
+)
+
+$ErrorActionPreference = "Stop"
+
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+    throw "uv is required. Install it with: winget install astral-sh.uv"
+}
+
+$Root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Wheel = Get-ChildItem $Root -Filter "dcc_mcp_substancedesigner-*.whl" | Select-Object -First 1
+if (-not $Wheel) {
+    throw "Wheel file not found next to install.ps1"
+}
+
+uv tool install --force $Wheel.FullName
+
+if ($SubstanceDesignerPluginDir) {
+    $Source = Join-Path $Root "plugin\dcc-mcp-substancedesigner"
+    $Target = Join-Path $SubstanceDesignerPluginDir "dcc-mcp-substancedesigner"
+    if (Test-Path $Target) {
+        Remove-Item $Target -Recurse -Force
+    }
+    Copy-Item -Path $Source -Destination $Target -Recurse
+    Write-Host "Installed Substance Designer plugin to $Target"
+}
+
+Write-Host "Installed dcc-mcp-substancedesigner. Run: dcc-mcp-substancedesigner --check-bridge"
+"""
+
+
+def _project_version(repo_root: Path) -> str:
+    with (repo_root / "pyproject.toml").open("rb") as handle:
+        return tomllib.load(handle)["project"]["version"]
+
+
+def _write_user_bundle(repo_root: Path, dist_dir: Path, output_dir: Path) -> Path:
+    version = _project_version(repo_root)
+    wheel = next(dist_dir.glob("*.whl"), None)
+    if wheel is None:
+        raise SystemExit(f"No wheel found in {dist_dir}")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    archive_path = output_dir / f"dcc-mcp-substancedesigner-{version}-windows.zip"
+    if archive_path.exists():
+        archive_path.unlink()
+
+    plugin_dir = repo_root / "plugin"
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.write(repo_root / "README.md", "README.md")
+        archive.write(repo_root / "docs" / "install.md", "INSTALL.md")
+        archive.writestr("install.ps1", INSTALL_SCRIPT)
+        archive.write(wheel, wheel.name)
+        for path in sorted(plugin_dir.rglob("*")):
+            if path.is_dir() or "__pycache__" in path.parts or path.suffix == ".pyc":
+                continue
+            archive.write(path, Path("plugin/dcc-mcp-substancedesigner") / path.relative_to(plugin_dir))
+
+    return archive_path
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build wheel, sdist, and Substance Designer plugin ZIP")
+    parser = argparse.ArgumentParser(description="Build Python, plugin, and user release artifacts")
     parser.add_argument("--dist-dir", default="dist", help="Python package artifact directory")
     parser.add_argument("--plugin-output-dir", default="dist_plugin", help="Plugin artifact directory")
+    parser.add_argument("--user-output-dir", default="dist_user", help="User-facing release bundle directory")
     parser.add_argument("--no-clean", action="store_true", help="Keep existing artifact directories")
     args = parser.parse_args(argv)
 
     repo_root = Path(__file__).resolve().parents[1]
     dist_dir = repo_root / args.dist_dir
     plugin_output_dir = repo_root / args.plugin_output_dir
+    user_output_dir = repo_root / args.user_output_dir
 
     if not args.no_clean:
         shutil.rmtree(dist_dir, ignore_errors=True)
         shutil.rmtree(plugin_output_dir, ignore_errors=True)
+        shutil.rmtree(user_output_dir, ignore_errors=True)
 
     subprocess.run(
         [sys.executable, "-m", "build", "--outdir", str(dist_dir)],
@@ -39,9 +105,13 @@ def main(argv: list[str] | None = None) -> int:
         cwd=repo_root,
         check=True,
     )
+    user_bundle = _write_user_bundle(repo_root, dist_dir, user_output_dir)
 
     artifacts = (
-        sorted(dist_dir.glob("*.whl")) + sorted(dist_dir.glob("*.tar.gz")) + sorted(plugin_output_dir.glob("*.zip"))
+        sorted(dist_dir.glob("*.whl"))
+        + sorted(dist_dir.glob("*.tar.gz"))
+        + sorted(plugin_output_dir.glob("*.zip"))
+        + [user_bundle]
     )
     if not artifacts:
         raise SystemExit("No release artifacts were produced.")

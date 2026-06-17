@@ -48,10 +48,11 @@ def _load_release_notes_module():
 
 
 def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
-    """Release script builds Python and plugin artifacts."""
+    """Release script builds Python, plugin, and user bundle artifacts."""
     module = _load_release_module()
     dist_dir = tmp_path / "dist"
     plugin_dir = tmp_path / "dist_plugin"
+    user_dir = tmp_path / "dist_user"
     calls: list[list[str]] = []
 
     def fake_run(command: list[str], **_kwargs) -> None:
@@ -66,11 +67,30 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
 
     monkeypatch.setattr(module.subprocess, "run", fake_run)
 
-    assert module.main(["--dist-dir", str(dist_dir), "--plugin-output-dir", str(plugin_dir)]) == 0
+    assert (
+        module.main(
+            ["--dist-dir", str(dist_dir), "--plugin-output-dir", str(plugin_dir), "--user-output-dir", str(user_dir)]
+        )
+        == 0
+    )
     assert [command[1:3] for command in calls] == [
         ["-m", "build"],
         ["packaging/assemble_plugin_package.py", "--output-dir"],
     ]
+    bundle_path = user_dir / "dcc-mcp-substancedesigner-0.1.1-windows.zip"
+    assert bundle_path.is_file()
+    with zipfile.ZipFile(bundle_path) as archive:
+        names = set(archive.namelist())
+    assert "README.md" in names
+    assert "INSTALL.md" in names
+    assert "install.ps1" in names
+    assert "package.whl" in names
+    assert "plugin/dcc-mcp-substancedesigner/__init__.py" in names
+    with zipfile.ZipFile(bundle_path) as archive:
+        install_script = archive.read("install.ps1").decode("utf-8")
+    assert "winget install astral-sh.uv" in install_script
+    assert "uv tool install --force $Wheel.FullName" in install_script
+    assert "Remove-Item $Target -Recurse -Force" in install_script
 
 
 def test_extract_release_notes_uses_matching_changelog_section(tmp_path: Path) -> None:

@@ -8,33 +8,44 @@ release assets. For source checkout and development workflows, see
 ## Requirements
 
 - Adobe Substance 3D Designer 16.0 or newer
-- `uv`
+- `uv` on Windows
 - An MCP client such as Codex Desktop, Claude Desktop, or another client that
   can connect to a local HTTP MCP endpoint
 
 The adapter is intended for trusted local sessions. The Substance Designer
 plugin bridge and MCP endpoints listen on `127.0.0.1` by default.
 
-## Download Release Assets
+Install `uv` first if it is not already available:
+
+```powershell
+winget install astral-sh.uv
+```
+
+## Download the User Bundle
 
 Download the release assets from GitHub Releases:
 
-- the Python wheel or source distribution for `dcc-mcp-substancedesigner`
-- the Substance Designer plugin ZIP
+- `dcc-mcp-substancedesigner-0.1.1-windows.zip`
 
-Install the Python package from the downloaded wheel:
+The wheel and source distribution may also be attached to the release for
+development and packaging workflows. Normal users should use the Windows ZIP.
+
+Extract the ZIP, then install the Python command:
 
 ```powershell
-uv tool install C:\path\to\dcc_mcp_substancedesigner-0.1.1-py3-none-any.whl
+.\install.ps1
 ```
-
-If you installed a source distribution instead, use the equivalent local path in
-the install command.
 
 ## Install the Substance Designer Plugin
 
-Extract the plugin ZIP into a Substance Designer plugin directory. The archive
-contains a `dcc-mcp-substancedesigner` plugin folder.
+The ZIP contains a `plugin\dcc-mcp-substancedesigner` plugin folder. Copy that
+folder into a Substance Designer plugin directory.
+
+You can also pass the plugin directory to the installer:
+
+```powershell
+.\install.ps1 "C:\path\to\Substance Designer plugins"
+```
 
 After extraction, the plugin directory should contain:
 

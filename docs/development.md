@@ -54,6 +54,12 @@ Build all release artifacts for the release workflow or GitHub Releases:
 uv run --extra dev python tools/build_release.py
 ```
 
+Outputs:
+
+- `dist/`: wheel and sdist for package workflows
+- `dist_plugin/`: standalone Substance Designer plugin ZIP
+- `dist_user/`: user-facing Windows bundle
+
 The `justfile` exposes the same commands as shorter recipes:
 
 ```bash

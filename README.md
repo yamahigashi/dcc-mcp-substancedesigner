@@ -34,9 +34,17 @@ are gated separately because they intentionally edit the connected host session.
 
 ## Installation
 
-GitHub Releases are the distribution channel. Release assets should include the
-Python wheel/sdist and a Substance Designer plugin ZIP assembled from this
-repository.
+GitHub Releases are the distribution channel. Normal users should download the
+single Windows bundle:
+
+```text
+dcc-mcp-substancedesigner-0.1.1-windows.zip
+```
+
+The bundle assumes Windows, Substance Designer 16.0+, and `uv`. It contains the
+Python wheel, the Substance Designer plugin folder, `install.ps1`, and local
+installation notes. Wheel and sdist artifacts may still be published for
+developer and packaging workflows.
 
 For user installation steps, see [`docs/install.md`](docs/install.md). For
 source checkout workflows, see [`docs/development.md`](docs/development.md).
@@ -93,7 +101,8 @@ and mutation tools for repeatable workflows. See
 ## CI and Live Testing
 
 Normal CI does not require Substance Designer. It runs linting, fake-host tests,
-wheel/sdist build, and plugin package assembly.
+wheel/sdist build, plugin package assembly, and the user-facing Windows release
+bundle build.
 
 Live checks require Substance Designer 16.0+ with the plugin loaded:
 

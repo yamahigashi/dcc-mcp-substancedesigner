@@ -42,6 +42,7 @@ jobs:
           path: |
             dist/*
             dist_plugin/*
+            dist_user/*
       - name: Extract release notes
         run: uv run python tools/extract_release_notes.py --tag "${{ github.ref_name }}" --output release-notes.md
       - name: Attach assets to GitHub Release
@@ -52,3 +53,4 @@ jobs:
           files: |
             dist/*
             dist_plugin/*
+            dist_user/*

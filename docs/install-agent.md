@@ -35,6 +35,10 @@ Build release artifacts:
 uv run --extra dev python tools/build_release.py
 ```
 
+Use `dist_user/dcc-mcp-substancedesigner-<version>-windows.zip` for the
+user-facing release asset. `dist/` and `dist_plugin/` are developer/package
+artifacts.
+
 ## Host Plugin Boundary
 
 Substance Designer runs on Windows. The repository may be edited from WSL, but
