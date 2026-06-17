@@ -25,7 +25,7 @@ winget install astral-sh.uv
 
 Download the release assets from GitHub Releases:
 
-- `dcc-mcp-substancedesigner-0.1.1-windows.zip`
+- `dcc-mcp-substancedesigner-<version>-windows.zip`
 
 Wheel, source distribution, and standalone plugin ZIP files are packaging
 inputs. Normal users should use the Windows ZIP.
@@ -107,16 +107,15 @@ paths or ports as needed:
 }
 ```
 
-## Verify the Connection
+## Run the MCP Server
 
-With Substance Designer running and the plugin loaded, run:
+With Substance Designer running and the plugin loaded, start the server:
 
 ```powershell
-dcc-mcp-substancedesigner --check-bridge --sd-port 9881
+.\run-server.bat
 ```
 
-If the bridge check succeeds, start the server again and connect your MCP
-client to `http://127.0.0.1:9765/mcp`.
+Then connect your MCP client to `http://127.0.0.1:9765/mcp`.
 
 ## Troubleshooting
 

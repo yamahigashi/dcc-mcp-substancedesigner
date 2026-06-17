@@ -55,9 +55,22 @@ echo Installation finished.
 pause
 """
 
+RUN_SERVER_BAT = r"""@echo off
+setlocal
+set DCC_MCP_ADMIN_UI_PREBUILT=1
+dcc-mcp-substancedesigner --sd-port 9881
+if errorlevel 1 (
+  echo.
+  echo Server stopped with an error. See the message above.
+  pause
+  exit /b 1
+)
+"""
+
 README_TXT = """dcc-mcp-substancedesigner
 
 Double-click install.bat to install the Python command.
+Double-click run-server.bat to start the MCP server.
 
 Requirements:
 - Windows
@@ -73,10 +86,13 @@ Command Prompt and pass your Substance Designer plugin folder:
 install.bat "C:\\path\\to\\Substance Designer plugins"
 
 After installing, start Substance Designer, load the plugin, then run:
-dcc-mcp-substancedesigner --check-bridge
+run-server.bat
 
 MCP clients should connect to:
 http://127.0.0.1:9765/mcp
+
+Optional diagnostic command:
+dcc-mcp-substancedesigner --check-bridge --sd-port 9881
 """
 
 
@@ -101,6 +117,7 @@ def _write_user_bundle(repo_root: Path, dist_dir: Path, output_dir: Path) -> Pat
         archive.writestr("README.txt", README_TXT)
         archive.write(repo_root / "docs" / "install.md", "INSTALL.txt")
         archive.writestr("install.bat", INSTALL_BAT)
+        archive.writestr("run-server.bat", RUN_SERVER_BAT)
         archive.writestr("install.ps1", INSTALL_SCRIPT)
         archive.write(wheel, wheel.name)
         for path in sorted(plugin_dir.rglob("*")):

@@ -38,7 +38,7 @@ GitHub Releases are the distribution channel. Normal users should download the
 single Windows bundle:
 
 ```text
-dcc-mcp-substancedesigner-0.1.1-windows.zip
+dcc-mcp-substancedesigner-<version>-windows.zip
 ```
 
 The bundle assumes Windows, Substance Designer 16.0+, and `uv`. It contains the

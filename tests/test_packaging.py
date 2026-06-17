@@ -7,11 +7,18 @@ import py_compile
 import subprocess
 import sys
 import tarfile
+import tomllib
 import zipfile
 from collections.abc import Callable
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _project_version() -> str:
+    """Read the package version from pyproject.toml."""
+    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+        return tomllib.load(handle)["project"]["version"]
 
 
 def _load_packager_main() -> Callable[[list[str] | None], int]:
@@ -59,8 +66,8 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
         calls.append(command)
         if command[1:3] == ["-m", "build"]:
             dist_dir.mkdir()
-            (dist_dir / "package.whl").write_text("", encoding="utf-8")
-            (dist_dir / "package.tar.gz").write_text("", encoding="utf-8")
+            (dist_dir / "dcc_mcp_substancedesigner-test-py3-none-any.whl").write_text("", encoding="utf-8")
+            (dist_dir / "dcc_mcp_substancedesigner-test.tar.gz").write_text("", encoding="utf-8")
             return
         plugin_dir.mkdir()
         (plugin_dir / "plugin.zip").write_text("", encoding="utf-8")
@@ -77,22 +84,27 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
         ["-m", "build"],
         ["packaging/assemble_plugin_package.py", "--output-dir"],
     ]
-    bundle_path = user_dir / "dcc-mcp-substancedesigner-0.1.1-windows.zip"
+    bundle_path = user_dir / f"dcc-mcp-substancedesigner-{_project_version()}-windows.zip"
     assert bundle_path.is_file()
     with zipfile.ZipFile(bundle_path) as archive:
         names = set(archive.namelist())
     assert "README.txt" in names
     assert "INSTALL.txt" in names
     assert "install.bat" in names
+    assert "run-server.bat" in names
     assert "install.ps1" in names
-    assert "package.whl" in names
+    assert "dcc_mcp_substancedesigner-test-py3-none-any.whl" in names
     assert "plugin/dcc-mcp-substancedesigner/__init__.py" in names
     with zipfile.ZipFile(bundle_path) as archive:
         readme = archive.read("README.txt").decode("utf-8")
         install_bat = archive.read("install.bat").decode("utf-8")
+        run_server_bat = archive.read("run-server.bat").decode("utf-8")
         install_script = archive.read("install.ps1").decode("utf-8")
     assert "Double-click install.bat" in readme
+    assert "Double-click run-server.bat" in readme
     assert "powershell.exe" in install_bat
+    assert "dcc-mcp-substancedesigner --sd-port 9881" in run_server_bat
+    assert "dcc-mcp-substancedesigner --check-bridge --sd-port 9881" in readme
     assert "winget install astral-sh.uv" in install_script
     assert "uv tool install --force $Wheel.FullName" in install_script
     assert "Remove-Item $Target -Recurse -Force" in install_script
