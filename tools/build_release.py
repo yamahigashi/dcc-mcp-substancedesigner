@@ -61,7 +61,7 @@ pause
 
 RUN_SERVER_BAT = r"""@echo off
 setlocal
-set DCC_MCP_ADMIN_UI_PREBUILT=1
+set MCP_LOG_LEVEL=INFO
 dcc-mcp-substancedesigner --sd-port 9881
 if errorlevel 1 (
   echo.
