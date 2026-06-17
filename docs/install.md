@@ -41,12 +41,6 @@ Extract the ZIP, then install the Python command:
 The ZIP contains a `plugin\dcc-mcp-substancedesigner` plugin folder. Copy that
 folder into a Substance Designer plugin directory.
 
-You can also pass the plugin directory to the installer:
-
-```powershell
-.\install.bat "C:\path\to\Substance Designer plugins"
-```
-
 After extraction, the plugin directory should contain:
 
 ```text
@@ -67,8 +61,7 @@ adapter.
 Start the server after Substance Designer is running and the plugin is loaded:
 
 ```powershell
-$env:DCC_MCP_ADMIN_UI_PREBUILT = "1"
-dcc-mcp-substancedesigner --sd-port 9881
+.\run-server.bat
 ```
 
 The default endpoints are:

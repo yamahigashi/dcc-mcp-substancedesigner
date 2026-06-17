@@ -20,10 +20,14 @@ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     throw "uv is required. Install it with: winget install astral-sh.uv"
 }
 
-$Root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$Internal = Join-Path $Root "_internal"
 $Wheel = Get-ChildItem $Root -Filter "dcc_mcp_substancedesigner-*.whl" | Select-Object -First 1
 if (-not $Wheel) {
-    throw "Wheel file not found next to install.ps1"
+    $Wheel = Get-ChildItem $Internal -Filter "dcc_mcp_substancedesigner-*.whl" | Select-Object -First 1
+}
+if (-not $Wheel) {
+    throw "Wheel file not found in the _internal folder"
 }
 
 uv tool install --force $Wheel.FullName
@@ -43,7 +47,7 @@ Write-Host "Installed dcc-mcp-substancedesigner. Run: dcc-mcp-substancedesigner 
 
 INSTALL_BAT = r"""@echo off
 setlocal
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0install.ps1" %*
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0_internal\install.ps1" %*
 if errorlevel 1 (
   echo.
   echo Installation failed. See the message above.
@@ -69,24 +73,29 @@ if errorlevel 1 (
 
 README_TXT = """dcc-mcp-substancedesigner
 
-Double-click install.bat to install the Python command.
-Double-click run-server.bat to start the MCP server.
-
 Requirements:
 - Windows
 - Adobe Substance 3D Designer 16.0 or newer
 - uv
 
-If uv is not installed, run:
-winget install astral-sh.uv
+Files:
+- README.txt: this file
+- install.bat: installs the MCP server command
+- run-server.bat: starts the MCP server
+- plugin\\dcc-mcp-substancedesigner: Substance Designer plugin folder
 
-To install the Substance Designer plugin automatically, run install.bat from
-Command Prompt and pass your Substance Designer plugin folder:
+Install:
+1. Install uv if needed:
+   winget install astral-sh.uv
 
-install.bat "C:\\path\\to\\Substance Designer plugins"
+2. Double-click install.bat.
 
-After installing, start Substance Designer, load the plugin, then run:
-run-server.bat
+3. Copy plugin\\dcc-mcp-substancedesigner into your Substance Designer plugins folder.
+
+Run:
+1. Start Substance Designer.
+2. Enable or load the dcc-mcp-substancedesigner plugin.
+3. Double-click run-server.bat.
 
 MCP clients should connect to:
 http://127.0.0.1:9765/mcp
@@ -115,11 +124,10 @@ def _write_user_bundle(repo_root: Path, dist_dir: Path, output_dir: Path) -> Pat
     plugin_dir = repo_root / "plugin"
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("README.txt", README_TXT)
-        archive.write(repo_root / "docs" / "install.md", "INSTALL.txt")
         archive.writestr("install.bat", INSTALL_BAT)
         archive.writestr("run-server.bat", RUN_SERVER_BAT)
-        archive.writestr("install.ps1", INSTALL_SCRIPT)
-        archive.write(wheel, wheel.name)
+        archive.writestr("_internal/install.ps1", INSTALL_SCRIPT)
+        archive.write(wheel, Path("_internal") / wheel.name)
         for path in sorted(plugin_dir.rglob("*")):
             if path.is_dir() or "__pycache__" in path.parts or path.suffix == ".pyc":
                 continue

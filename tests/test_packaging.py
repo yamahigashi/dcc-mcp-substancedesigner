@@ -88,21 +88,24 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
     assert bundle_path.is_file()
     with zipfile.ZipFile(bundle_path) as archive:
         names = set(archive.namelist())
+    top_level_files = {name for name in names if "/" not in name}
+    assert top_level_files == {"README.txt", "install.bat", "run-server.bat"}
     assert "README.txt" in names
-    assert "INSTALL.txt" in names
     assert "install.bat" in names
     assert "run-server.bat" in names
-    assert "install.ps1" in names
-    assert "dcc_mcp_substancedesigner-test-py3-none-any.whl" in names
+    assert "_internal/install.ps1" in names
+    assert "_internal/dcc_mcp_substancedesigner-test-py3-none-any.whl" in names
     assert "plugin/dcc-mcp-substancedesigner/__init__.py" in names
     with zipfile.ZipFile(bundle_path) as archive:
         readme = archive.read("README.txt").decode("utf-8")
         install_bat = archive.read("install.bat").decode("utf-8")
         run_server_bat = archive.read("run-server.bat").decode("utf-8")
-        install_script = archive.read("install.ps1").decode("utf-8")
+        install_script = archive.read("_internal/install.ps1").decode("utf-8")
     assert "Double-click install.bat" in readme
+    assert "Copy plugin\\dcc-mcp-substancedesigner" in readme
     assert "Double-click run-server.bat" in readme
     assert "powershell.exe" in install_bat
+    assert "_internal\\install.ps1" in install_bat
     assert "dcc-mcp-substancedesigner --sd-port 9881" in run_server_bat
     assert "dcc-mcp-substancedesigner --check-bridge --sd-port 9881" in readme
     assert "winget install astral-sh.uv" in install_script
