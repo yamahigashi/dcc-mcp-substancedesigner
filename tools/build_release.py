@@ -137,21 +137,18 @@ def _write_user_bundle(repo_root: Path, dist_dir: Path, output_dir: Path) -> Pat
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build Python, plugin, and user release artifacts")
+    parser = argparse.ArgumentParser(description="Build Python and user release artifacts")
     parser.add_argument("--dist-dir", default="dist", help="Python package artifact directory")
-    parser.add_argument("--plugin-output-dir", default="dist_plugin", help="Plugin artifact directory")
     parser.add_argument("--user-output-dir", default="dist_user", help="User-facing release bundle directory")
     parser.add_argument("--no-clean", action="store_true", help="Keep existing artifact directories")
     args = parser.parse_args(argv)
 
     repo_root = Path(__file__).resolve().parents[1]
     dist_dir = repo_root / args.dist_dir
-    plugin_output_dir = repo_root / args.plugin_output_dir
     user_output_dir = repo_root / args.user_output_dir
 
     if not args.no_clean:
         shutil.rmtree(dist_dir, ignore_errors=True)
-        shutil.rmtree(plugin_output_dir, ignore_errors=True)
         shutil.rmtree(user_output_dir, ignore_errors=True)
 
     subprocess.run(
@@ -159,24 +156,9 @@ def main(argv: list[str] | None = None) -> int:
         cwd=repo_root,
         check=True,
     )
-    subprocess.run(
-        [
-            sys.executable,
-            "packaging/assemble_plugin_package.py",
-            "--output-dir",
-            str(plugin_output_dir),
-        ],
-        cwd=repo_root,
-        check=True,
-    )
     user_bundle = _write_user_bundle(repo_root, dist_dir, user_output_dir)
 
-    artifacts = (
-        sorted(dist_dir.glob("*.whl"))
-        + sorted(dist_dir.glob("*.tar.gz"))
-        + sorted(plugin_output_dir.glob("*.zip"))
-        + [user_bundle]
-    )
+    artifacts = sorted(dist_dir.glob("*.whl")) + sorted(dist_dir.glob("*.tar.gz")) + [user_bundle]
     if not artifacts:
         raise SystemExit("No release artifacts were produced.")
 

@@ -102,8 +102,7 @@ and mutation tools for repeatable workflows. See
 ## CI and Live Testing
 
 Normal CI does not require Substance Designer. It runs linting, fake-host tests,
-wheel/sdist build, plugin package assembly, and the user-facing Windows release
-bundle build.
+wheel/sdist build, and the user-facing Windows release bundle build.
 
 Live checks require Substance Designer 16.0+ with the plugin loaded:
 
@@ -128,9 +127,7 @@ dcc-mcp-substancedesigner/
 ├── plugin/                         # Substance Designer host plugin and bridge commands
 ├── tests/                          # Unit, fake-host, packaging, and opt-in live tests
 ├── tools/                          # Local helper scripts and stub generation
-├── packaging/                      # Plugin archive assembly
 ├── docs/                           # Install, architecture, policy, integration, and ADR docs
-├── examples/                       # Launch snippets
 ├── justfile                        # Task runner
 └── pyproject.toml                  # Build and dependency metadata
 ```

@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
 import py_compile
 import subprocess
 import sys
 import tarfile
 import tomllib
 import zipfile
-from collections.abc import Callable
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -21,19 +19,10 @@ def _project_version() -> str:
         return tomllib.load(handle)["project"]["version"]
 
 
-def _load_packager_main() -> Callable[[list[str] | None], int]:
-    """Load the packaging entry point without importing from a script package."""
-    script_path = REPO_ROOT / "packaging" / "assemble_plugin_package.py"
-    spec = importlib.util.spec_from_file_location("assemble_plugin_package", script_path)
-    assert spec is not None
-    assert spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module.main
-
-
 def _load_release_module():
     """Load the release build script."""
+    import importlib.util
+
     script_path = REPO_ROOT / "tools" / "build_release.py"
     spec = importlib.util.spec_from_file_location("build_release", script_path)
     assert spec is not None
@@ -45,6 +34,8 @@ def _load_release_module():
 
 def _load_release_notes_module():
     """Load the release notes extraction script."""
+    import importlib.util
+
     script_path = REPO_ROOT / "tools" / "extract_release_notes.py"
     spec = importlib.util.spec_from_file_location("extract_release_notes", script_path)
     assert spec is not None
@@ -55,10 +46,9 @@ def _load_release_notes_module():
 
 
 def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
-    """Release script builds Python, plugin, and user bundle artifacts."""
+    """Release script builds Python artifacts and the user bundle."""
     module = _load_release_module()
     dist_dir = tmp_path / "dist"
-    plugin_dir = tmp_path / "dist_plugin"
     user_dir = tmp_path / "dist_user"
     calls: list[list[str]] = []
 
@@ -69,21 +59,11 @@ def test_build_release_runs_package_builds(monkeypatch, tmp_path: Path) -> None:
             (dist_dir / "dcc_mcp_substancedesigner-test-py3-none-any.whl").write_text("", encoding="utf-8")
             (dist_dir / "dcc_mcp_substancedesigner-test.tar.gz").write_text("", encoding="utf-8")
             return
-        plugin_dir.mkdir()
-        (plugin_dir / "plugin.zip").write_text("", encoding="utf-8")
 
     monkeypatch.setattr(module.subprocess, "run", fake_run)
 
-    assert (
-        module.main(
-            ["--dist-dir", str(dist_dir), "--plugin-output-dir", str(plugin_dir), "--user-output-dir", str(user_dir)]
-        )
-        == 0
-    )
-    assert [command[1:3] for command in calls] == [
-        ["-m", "build"],
-        ["packaging/assemble_plugin_package.py", "--output-dir"],
-    ]
+    assert module.main(["--dist-dir", str(dist_dir), "--user-output-dir", str(user_dir)]) == 0
+    assert [command[1:3] for command in calls] == [["-m", "build"]]
     bundle_path = user_dir / f"dcc-mcp-substancedesigner-{_project_version()}-windows.zip"
     assert bundle_path.is_file()
     with zipfile.ZipFile(bundle_path) as archive:
@@ -118,8 +98,6 @@ def test_github_release_uploads_only_user_bundle() -> None:
     workflow = (REPO_ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
 
     assert "dist_user/*" in workflow
-    assert "dist/*" not in workflow
-    assert "dist_plugin/*" not in workflow
 
 
 def test_extract_release_notes_uses_matching_changelog_section(tmp_path: Path) -> None:
@@ -132,30 +110,6 @@ def test_extract_release_notes_uses_matching_changelog_section(tmp_path: Path) -
     )
 
     assert module.extract_notes(changelog, "0.2.0") == "## [0.2.0] - 2026-01-02\n\nnew\n"
-
-
-def test_assemble_plugin_package_contains_plugin_files(tmp_path: Path) -> None:
-    """Plugin zip includes every host plugin source file."""
-    output_dir = tmp_path / "dist_plugin"
-    main = _load_packager_main()
-
-    assert main(["--output-dir", str(output_dir)]) == 0
-
-    archive_path = output_dir / "dcc-mcp-substancedesigner-plugin.zip"
-    assert archive_path.is_file()
-    with zipfile.ZipFile(archive_path) as archive:
-        names = set(archive.namelist())
-
-    expected_plugin_files = {
-        "dcc-mcp-substancedesigner/{}".format(path.relative_to(REPO_ROOT / "plugin").as_posix())
-        for path in (REPO_ROOT / "plugin").rglob("*.py")
-    }
-    packaged_plugin_files = {
-        name for name in names if name.startswith("dcc-mcp-substancedesigner/") and name.endswith(".py")
-    }
-
-    assert packaged_plugin_files == expected_plugin_files
-    assert not any("__pycache__" in name for name in names)
 
 
 def test_plugin_tree_contains_no_generated_python_artifacts() -> None:

@@ -9,7 +9,7 @@ This repository implements a DCC MCP adapter for Adobe Substance 3D Designer 16.
 - `plugin/`: repository-owned Substance Designer host plugin and embedded recipe/documentation data.
 - `tests/`: pytest suite. Live host checks are opt-in integration tests.
 - `docs/`: architecture, installation, integration testing, tool policy, and ADRs.
-- `tools/`, `packaging/`, `config/`, `examples/`: Windows plugin helpers, plugin zip assembly, client config examples, and launch snippets.
+- `tools/`: Windows plugin helpers, release assembly, live verification, and local development utilities.
 
 Use [`dcc-mcp-core`](https://github.com/loonghao/dcc-mcp-core) for shared MCP contracts, server composition, skills runtime, gateway integration, and adapter boundaries. Treat this repository's `src/`, `plugin/`, `tests/`, and ADRs as the source of truth for Substance Designer bridge behavior and graph/node tooling.
 
@@ -19,10 +19,10 @@ Use `uv` for local development.
 
 - `uv sync --extra dev`: install runtime and development dependencies.
 - `uv run pytest tests/ -v --tb=short`: run the default suite, excluding live integration tests.
-- `uv run ruff check src/ tests/ tools/ packaging/`: lint Python sources.
-- `uv run ruff format src/ tests/ tools/ packaging/`: format Python sources.
+- `uv run ruff check src/ tests/ tools/`: lint Python sources.
+- `uv run ruff format src/ tests/ tools/`: format Python sources.
 - `uv run python -m build`: build the wheel and sdist.
-- `uv run python packaging/assemble_plugin_package.py`: create the Substance Designer plugin zip.
+- `uv run python tools/build_release.py`: build the user-facing release bundle.
 - `uv run dcc-mcp-substancedesigner --check-bridge`: verify a running plugin bridge.
 
 ## Coding Style & Naming Conventions

@@ -43,9 +43,6 @@ include = [
     "tests",
     "tools",
     "plugin",
-    "packaging",
-    "config",
-    "examples",
     "docs",
     "README.md",
     "AGENTS.md",
@@ -97,7 +94,6 @@ known-first-party = ["dcc_mcp_substancedesigner"]
 "tests/*" = ["S101"]
 "tests/**/*.py" = ["ANN", "D"]
 "tools/**/*.py" = ["ANN", "D"]
-"packaging/**/*.py" = ["ANN", "D"]
 
 [tool.ruff.format]
 quote-style = "double"

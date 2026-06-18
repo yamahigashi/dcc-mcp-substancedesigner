@@ -13,8 +13,7 @@ uv run --extra dev ruff check .
 uv run --extra dev ruff format --check .
 uv run --extra dev ty check src/dcc_mcp_substancedesigner/bridge.py plugin/bridge/bridge_server.py --ignore unresolved-import
 uv run --extra dev pytest tests/ -v --tb=short
-uv run --extra dev python -m build
-uv run --extra dev python packaging/assemble_plugin_package.py
+uv run --extra dev python tools/build_release.py
 ```
 
 With `just`, the same local gate is:

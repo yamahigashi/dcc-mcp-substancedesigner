@@ -57,7 +57,6 @@ uv run --extra dev python tools/build_release.py
 Outputs:
 
 - `dist/`: wheel and sdist for package workflows
-- `dist_plugin/`: standalone Substance Designer plugin ZIP
 - `dist_user/`: user-facing Windows bundle
 
 The `justfile` exposes the same commands as shorter recipes:
@@ -82,12 +81,6 @@ Check or remove the link:
 ```bash
 just substancedesigner-status-win "C:/path/to/Substance Designer/plugins"
 just substancedesigner-unlink-win "C:/path/to/Substance Designer/plugins"
-```
-
-Create a plugin ZIP archive for manual installation or release packaging:
-
-```bash
-just package-plugin
 ```
 
 ## Local Server

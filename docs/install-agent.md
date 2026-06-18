@@ -36,7 +36,7 @@ uv run --extra dev python tools/build_release.py
 ```
 
 Use `dist_user/dcc-mcp-substancedesigner-<version>-windows.zip` for the
-user-facing release asset. `dist/` and `dist_plugin/` are developer/package
+user-facing release asset. `dist/` contains intermediate wheel and sdist
 artifacts.
 
 ## Host Plugin Boundary

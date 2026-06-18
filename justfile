@@ -54,9 +54,6 @@ build:
 release:
     uv run --extra dev python tools/build_release.py
 
-package-plugin:
-    uv run --extra dev python packaging/assemble_plugin_package.py
-
 check-bridge:
     uv run --extra dev dcc-mcp-substancedesigner --check-bridge --sd-host {{sd_bridge_host}} --sd-port {{sd_bridge_port}}
 
@@ -106,5 +103,5 @@ substancedesigner-status-win target:
 clean:
     uv run --extra dev python -c "import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ['dist', 'build', 'src/dcc_mcp_substancedesigner.egg-info']]"
 
-ci: lint-all test build package-plugin
+ci: lint-all test release
     @echo "All CI checks passed"
